@@ -1,4 +1,5 @@
 .sass-cache
+style.css
 *.sublime-*
 local server.bat
 todo.txt
