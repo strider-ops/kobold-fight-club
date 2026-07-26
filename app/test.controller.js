@@ -15,10 +15,8 @@
 		'alignments',
 		'monsterFactory',
 		'metaInfo',
-		'monsterData',
 		'randomEncounter',
-		'encounter',
-		'filters'
+		'encounter'
 	];
 
 	function TestController(miscLib, appVersion) {

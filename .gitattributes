@@ -1,2 +1,7 @@
 # Set the default behavior, in case people don't have core.autocrlf set.
 * text=auto
+
+# Binary artefacts must be exempt from the line-ending conversion above — `* text=auto`
+# would rewrite CRLF byte sequences inside them and silently corrupt the file.
+*.db binary
+*.wasm binary

@@ -19,16 +19,18 @@ describe('combat tests', function() {
 	describe('roll initiative', function() {
 		
 		it('should set values on the combatant', function() {
-			// Between 0 and 19
+			// rollInitiative uses _.random(1, 20) — a d20, so the stub stands in for
+			// the roll itself. This expectation previously assumed an older
+			// _.random(0, 19) + 1 form and expected 12.
 			spyOn(_, 'random').and.returnValue(9);
-			
+
 			var combatant = {
 				initiative: 0,
 				initiativeMod: 2
 			};
 
 			combat.rollInitiative(combatant);
-			expect(combatant.initiative).toEqual(12);
+			expect(combatant.initiative).toEqual(11);
 			expect(combatant.initiativeRolled).toBeTruthy();
 		});
 

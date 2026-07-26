@@ -1,0 +1,23 @@
+[
+	{
+		"issue": "Guardian Naga and Spirit Naga have their ac, hp and init values transposed with each other in the Official sheet.",
+		"evidence": "Each monster's embedded stat block is internally consistent with its own CR and ability scores, while the sheet is not. Guardian Naga is CR 10 with dex 18, so ac 18 / hp 127 / init +4; Spirit Naga is CR 8 with dex 17, so ac 15 / hp 75 / init +3. The sheet carries each of those three values on the other monster's row — note it also gives the CR 8 monster more hp than the CR 10 one.",
+		"source": "data/raw/embedded-monsters.json stat blocks; cross-checked against each row's own cr and dex",
+		"changes": [
+			{ "fid": "mm.guardian-naga", "field": "ac",   "from": "15",  "to": "18" },
+			{ "fid": "mm.guardian-naga", "field": "hp",   "from": "75",  "to": "127" },
+			{ "fid": "mm.guardian-naga", "field": "init", "from": "3",   "to": "4" },
+			{ "fid": "mm.spirit-naga",   "field": "ac",   "from": "18",  "to": "15" },
+			{ "fid": "mm.spirit-naga",   "field": "hp",   "from": "127", "to": "75" },
+			{ "fid": "mm.spirit-naga",   "field": "init", "from": "4",   "to": "3" }
+		]
+	},
+	{
+		"issue": "Smoke Mephit has hp 2 instead of 22 in the Official sheet — a dropped digit.",
+		"evidence": "The embedded stat block gives hp 22. The sheet's ac (12) and init (2, matching dex 14) are both correct, so only hp is affected. hp 2 is also impossible for a CR 1/4 creature.",
+		"source": "data/raw/embedded-monsters.json stat block",
+		"changes": [
+			{ "fid": "mm.smoke-mephit", "field": "hp", "from": "2", "to": "22" }
+		]
+	}
+]

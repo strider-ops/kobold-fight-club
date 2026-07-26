@@ -1,0 +1,243 @@
+[
+	{
+		"type": "Official Web Supplement",
+		"name": "Basic Rules v1",
+		"short name": "Basic",
+		"link": "",
+		"default selected?": "",
+		"_sheet": "Official"
+	},
+	{
+		"type": "Official Adventure",
+		"name": "Curse of Strahd",
+		"short name": "Strahd",
+		"link": "",
+		"default selected?": "",
+		"_sheet": "Official"
+	},
+	{
+		"type": "Official Adventure",
+		"name": "Hoard of the Dragon Queen",
+		"short name": "Hoard",
+		"link": "",
+		"default selected?": "",
+		"_sheet": "Official"
+	},
+	{
+		"type": "Official Web Supplement",
+		"name": "HotDQ supplement",
+		"short name": "HoardSup",
+		"link": "",
+		"default selected?": "",
+		"_sheet": "Official"
+	},
+	{
+		"type": "Official",
+		"name": "Monster Manual",
+		"short name": "MM",
+		"link": "",
+		"default selected?": "yes",
+		"_sheet": "Official"
+	},
+	{
+		"type": "Official",
+		"name": "Mordenkainen's Tome of Foes",
+		"short name": "Mord'sToF",
+		"link": "",
+		"default selected?": "",
+		"_sheet": "Official"
+	},
+	{
+		"type": "Official Adventure",
+		"name": "Out of the Abyss",
+		"short name": "Abyss",
+		"link": "",
+		"default selected?": "",
+		"_sheet": "Official"
+	},
+	{
+		"type": "Official",
+		"name": "Player's Handbook",
+		"short name": "PHB",
+		"link": "",
+		"default selected?": "yes",
+		"_sheet": "Official"
+	},
+	{
+		"type": "Official Adventure",
+		"name": "Princes of the Apocalypse",
+		"short name": "Apoc",
+		"link": "",
+		"default selected?": "",
+		"_sheet": "Official"
+	},
+	{
+		"type": "Official Web Supplement",
+		"name": "Princes of the Apocalypse Online Supplement v1.0",
+		"short name": "ApocSup",
+		"link": "",
+		"default selected?": "",
+		"_sheet": "Official"
+	},
+	{
+		"type": "Official Adventure",
+		"name": "Rise of Tiamat",
+		"short name": "Tiamat",
+		"link": "",
+		"default selected?": "",
+		"_sheet": "Official"
+	},
+	{
+		"type": "Official Adventure",
+		"name": "Storm King's Thunder",
+		"short name": "StrmKing",
+		"link": "",
+		"default selected?": "",
+		"_sheet": "Official"
+	},
+	{
+		"type": "Official Adventure",
+		"name": "Tales from the Yawning Portal",
+		"short name": "TftYP",
+		"link": "",
+		"default selected?": "",
+		"_sheet": "Official"
+	},
+	{
+		"type": "Official Web Supplement",
+		"name": "The Tortle Package",
+		"short name": "Tortle",
+		"link": "http://www.dmsguild.com/product/221716/Tortle-Package-5e",
+		"default selected?": "",
+		"_sheet": "Official"
+	},
+	{
+		"type": "Official Adventure",
+		"name": "Tomb of Annihilation",
+		"short name": "ToA",
+		"link": "",
+		"default selected?": "",
+		"_sheet": "Official"
+	},
+	{
+		"type": "Official",
+		"name": "Volo's Guide to Monsters",
+		"short name": "Volo",
+		"link": "",
+		"default selected?": "",
+		"_sheet": "Official"
+	},
+	{
+		"type": "Third-Party",
+		"name": "Demon Cults & Secret Societies",
+		"short name": "DCSS",
+		"link": "",
+		"_sheet": "Third-Party"
+	},
+	{
+		"type": "Third-Party",
+		"name": "Fifth Edition Foes",
+		"short name": "5eF",
+		"link": "",
+		"_sheet": "Third-Party"
+	},
+	{
+		"type": "Third-Party",
+		"name": "Monsters of the Orient",
+		"short name": "moto",
+		"link": "http://www.dmsguild.com/product/215595",
+		"_sheet": "Third-Party"
+	},
+	{
+		"type": "Third-Party",
+		"name": "Primeval Thule Campaign Setting",
+		"short name": "ThuleCS",
+		"link": "",
+		"_sheet": "Third-Party"
+	},
+	{
+		"type": "Third-Party",
+		"name": "Primeval Thule Gamemaster's Companion",
+		"short name": "ThuleGM",
+		"link": "",
+		"_sheet": "Third-Party"
+	},
+	{
+		"type": "Third-Party",
+		"name": "Quests of Doom Volume 1",
+		"short name": "QoDv1",
+		"link": "https://www.froggodgames.com/quests-doom-5e-volume-1",
+		"_sheet": "Third-Party"
+	},
+	{
+		"type": "Third-Party",
+		"name": "Quests of Doom Volume 2",
+		"short name": "QoDv2",
+		"link": "https://www.froggodgames.com/quests-doom-5e-volume-2",
+		"_sheet": "Third-Party"
+	},
+	{
+		"type": "Third-Party",
+		"name": "Tome of Beasts",
+		"short name": "ToB",
+		"link": "",
+		"_sheet": "Third-Party"
+	},
+	{
+		"type": "Third-Party",
+		"name": "Ultimate Bestiary Revenge of the Horde",
+		"short name": "UBRotH",
+		"link": "https://nordgamesllc.com/product/ultimate-bestiary-revenge-horde/",
+		"_sheet": "Third-Party"
+	},
+	{
+		"type": "Community",
+		"name": "Critter Compendium",
+		"short name": "CC",
+		"link": "http://www.dmsguild.com/product/210151/Critter-Compendium",
+		"_sheet": "Community"
+	},
+	{
+		"type": "Community",
+		"name": "Monster Module",
+		"short name": "MMod",
+		"link": "https://www.reddit.com/r/UnearthedArcana/comments/61fvyr/the_monster_module_ab_22_pages_of_monsters_to/",
+		"_sheet": "Community"
+	},
+	{
+		"type": "Community",
+		"name": "Monster-A-Day",
+		"short name": "MAD",
+		"link": "https://www.reddit.com/r/monsteraday/",
+		"_sheet": "Community"
+	},
+	{
+		"type": "Community",
+		"name": "Monsters of the Guild",
+		"short name": "MotG",
+		"link": "http://www.dmsguild.com/product/234150/Monsters-of-the-Guild?src=hottest_filtered&filters=45469",
+		"_sheet": "Community"
+	},
+	{
+		"type": "Community",
+		"name": "Nerzugal's Dungeon Master Toolkit 2",
+		"short name": "NDMT2",
+		"link": "http://www.dmsguild.com/product/242485/Nerzugals-Dungeon-Master-Toolkit-2",
+		"_sheet": "Community"
+	},
+	{
+		"type": "Community",
+		"name": "Nerzugal's Extended Bestiary",
+		"short name": "NEB",
+		"link": "http://www.drivethrurpg.com/product/205000/Nerzugals-Extended-Bestiary",
+		"_sheet": "Community"
+	},
+	{
+		"name": "Eberron - Rising from the Last War",
+		"type": "Official",
+		"short name": "ERLW",
+		"link": "",
+		"default selected?": "",
+		"_sheet": "Official"
+	}
+]

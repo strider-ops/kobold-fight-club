@@ -22,10 +22,11 @@ module.exports = function(config) {
 
     frameworks: ['jasmine', 'sinon', 'jasmine-sinon'],
 
-    browsers: ['PhantomJS'],
+    // PhantomJS was abandoned in 2018 and its launcher no longer installs on current
+    // Node/macOS. Headless Chrome is the drop-in replacement.
+    browsers: ['ChromeHeadless'],
 
     plugins: [
-      'karma-phantomjs-launcher',
       'karma-chrome-launcher',
       'karma-jasmine',
       'karma-sinon',
