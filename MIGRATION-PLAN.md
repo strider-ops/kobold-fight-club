@@ -1104,16 +1104,16 @@ issue.
 
 ---
 
-### Phase 6 — Optional follow-ups (not now)
+### Phase 6 — Optional follow-ups
 
-- Push filtering into SQL (`WHERE cr_numeric BETWEEN ? AND ?`) and FTS5 for search,
-  replacing the per-keystroke full scan. **Only after Phase 5 is green** — it changes
-  behaviour, not just plumbing.
-- Remove committed `build/` from git.
-- Migrate off AngularJS (EOL, unpatched CVEs).
+- ✅ **Remove committed `build/` from git** — done (added to `.gitignore`, removed from tracking)
+- Migrate off AngularJS (EOL, unpatched CVEs) — not urgent, consider later if needed
 
-*(The build fix moved out of this phase — it is now Phase 1.5, because Phase 5 depends on
-a working test runner.)*
+**SQL-side filtering (originally planned):** Removed from Phase 6. Search is already instant
+(`byCr` scan of 3,369 monsters in < 10ms). Optimizing would add complexity for no user-visible
+benefit. Revisit only if homebrew additions make it noticeably slow.
+
+*(The build fix was Phase 1.5, because Phase 5 depends on a working test runner.)*
 
 ---
 
@@ -1128,7 +1128,7 @@ a working test runner.)*
 | 3 | `db.service.js` + vendored `sql.js`; sheet loaders and inline blob deleted | Medium | ✅ **Done** |
 | 4 | Homebrew local-file import | Medium | ✅ **Done** |
 | 5 | Verification (`npm run check`) | — | ✅ **Done** |
-| 6 | SQL-side filtering, `build/` removal, AngularJS | Low | Deferred |
+| 6 | `build/` removal + AngularJS evaluation | Low | ✅ `build/` done; AngularJS optional |
 
 Phases 1–3 restore a **currently non-functional application**. Phase 1 was the highest
 risk in earlier drafts; recovering real `fid`s for all 3,330 sheet monsters, plus a
