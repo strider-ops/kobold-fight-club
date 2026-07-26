@@ -22,9 +22,9 @@
 
 	myApp.run(serviceInitialization);
 
-	serviceInitialization.$inject = ['encounter', 'players', 'partyInfo', 'monsters'];
+	serviceInitialization.$inject = ['encounter', 'players', 'partyInfo', 'monsters', 'homebrew'];
 
-	function serviceInitialization(encounter, players, partyInfo, monsters) {
+	function serviceInitialization(encounter, players, partyInfo, monsters, homebrew) {
 		discardStaleSheetCache();
 
 		partyInfo.initialize();
@@ -35,9 +35,13 @@
 		// as soon as it resolves. Failure is surfaced rather than swallowed: the old
 		// JSONP loader's promise never settled on error, which is why a first-time
 		// visitor saw an empty monster list and no explanation.
-		monsters.load().catch(function (error) {
-			console.error("Could not load the monster database.", error);
-		});
+		monsters.load()
+			// Imported homebrew is layered on top once the built-in catalog is in place,
+			// so a duplicate check has something to check against.
+			.then(function () { return homebrew.restore(); })
+			.catch(function (error) {
+				console.error("Could not load the monster database.", error);
+			});
 	}
 
 	/**

@@ -5,9 +5,9 @@
 		.module('app')
 		.controller('SearchController', SearchController);
 
-	SearchController.$inject = ["$scope", "metaInfo", "sources", "library"];
+	SearchController.$inject = ["$scope", "metaInfo", "sources", "library", "homebrew"];
 
-	function SearchController($scope, metaInfo, sources, library) {
+	function SearchController($scope, metaInfo, sources, library, homebrew) {
 		var vm = this;
 
 		vm.alignments = metaInfo.alignments;
@@ -36,15 +36,58 @@
 			if ( contentCacheKey !== cacheKey ) {
 				contentCacheKey = cacheKey;
 
-				contentCache = sources.all.map(function (name) {
-					return {
-						name: name,
-						shortName: sources.shortNames[name],
-					};
-				});
+				// Imported packs are listed separately in the modal, so leave them out
+				// here rather than showing them twice.
+				var homebrewNames = sources.sourcesByType["Homebrew"] || [];
+
+				contentCache = sources.all
+					.filter(function (name) { return homebrewNames.indexOf(name) === -1; })
+					.map(function (name) {
+						return {
+							name: name,
+							shortName: sources.shortNames[name],
+						};
+					});
 			}
 
 			return contentCache;
+		};
+
+		// ── Imported homebrew ────────────────────────────────────────────────
+		$scope.imported = homebrew.packs;
+		$scope.importResult = null;
+
+		/**
+		 * Called by the file-input directive. The file is read and parsed here in the
+		 * browser; nothing is uploaded.
+		 */
+		$scope.importFile = function (file) {
+			if ( !file ) {
+				return;
+			}
+
+			var reader = new FileReader();
+
+			reader.onload = function () {
+				$scope.$apply(function () {
+					$scope.importResult = homebrew.importText(file.name, reader.result);
+				});
+			};
+
+			reader.onerror = function () {
+				$scope.$apply(function () {
+					$scope.importResult = {
+						added: 0, skipped: 0, errors: ["Could not read that file."],
+					};
+				});
+			};
+
+			reader.readAsText(file);
+		};
+
+		$scope.removeImported = function (sourceName) {
+			homebrew.remove(sourceName);
+			$scope.importResult = null;
 		};
 
 		vm.resetFilters = resetFilters;

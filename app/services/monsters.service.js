@@ -50,8 +50,8 @@
 		"SELECT name, COALESCE(short_name, '') AS shortname, COALESCE(type, '') AS type," +
 		"       default_selected FROM source ORDER BY name";
 
-	Monsters.$inject = ["$q", "db", "misc", "monsterFactory"];
-	function Monsters($q, db, miscLib, monsterFactory) {
+	Monsters.$inject = ["$q", "$rootScope", "db", "misc", "monsterFactory"];
+	function Monsters($q, $rootScope, db, miscLib, monsterFactory) {
 		// Scoped to the injector rather than the module. These were module-level
 		// globals, which works in a browser (one injector per page load) but leaks
 		// state between tests, where every spec builds a fresh injector.
@@ -66,6 +66,9 @@
 			byId: byId,
 			check: monsterFactory.checkMonster,
 			load: load,
+			addCustom: addCustom,
+			removeCustom: removeCustom,
+			hasId: function (id) { return byId[id] !== undefined; },
 		};
 
 		/**
@@ -89,6 +92,78 @@
 			loadPromise.catch(function () { loadPromise = null; });
 
 			return loadPromise;
+		}
+
+		/**
+		 * Add an imported homebrew pack. Rows must be in the same shape the database
+		 * query produces, so they go through the identical Monster construction path —
+		 * an imported monster is not a second-class citizen with a different code path.
+		 */
+		function addCustom(sourceName, shortName, rows) {
+			registerSources([{
+				name: sourceName,
+				shortname: shortName || "",
+				type: "Homebrew",
+				// Imported content is switched on immediately; the user just asked for it.
+				default_selected: 1,
+			}]);
+
+			addMonsters(rows);
+
+			// search.controller listens for this to tick the new source's filter box.
+			$rootScope.$broadcast("custom-source-added", sourceName);
+
+			return rows.length;
+		}
+
+		/** Remove an imported pack: its monsters, and its entry in the source lists. */
+		function removeCustom(sourceName) {
+			var removed = 0;
+
+			for ( var i = all.length - 1; i >= 0; i-- ) {
+				var monster = all[i];
+				var fromThisSource = monster.sources.some(function (source) {
+					return source.name === sourceName;
+				});
+
+				if ( !fromThisSource ) {
+					continue;
+				}
+
+				all.splice(i, 1);
+				delete byId[monster.id];
+
+				var bucket = byCr[monster.cr.string] || [];
+				var at = bucket.indexOf(monster);
+				if ( at !== -1 ) {
+					bucket.splice(at, 1);
+				}
+
+				removed++;
+			}
+
+			var sourceIndex = miscLib.sources.indexOf(sourceName);
+			if ( sourceIndex !== -1 ) {
+				miscLib.sources.splice(sourceIndex, 1);
+			}
+
+			// The original removeSheet() deleted miscLib.sourceFilters[name] using the
+			// global `name` rather than its own argument, so it never removed anything.
+			delete miscLib.sourceFilters[sourceName];
+			delete miscLib.shortNames[sourceName];
+
+			Object.keys(miscLib.sourcesByType).forEach(function (type) {
+				var list = miscLib.sourcesByType[type];
+				var at = list.indexOf(sourceName);
+				if ( at !== -1 ) {
+					list.splice(at, 1);
+				}
+				if ( !list.length ) {
+					delete miscLib.sourcesByType[type];
+				}
+			});
+
+			return removed;
 		}
 
 		function registerSources(rows) {

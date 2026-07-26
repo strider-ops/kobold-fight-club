@@ -57,6 +57,11 @@
 		<button type="button" class="btn btn-default" data-toggle="modal" data-target="#sourcesModal">
 			Set Sources
 		</button>
+		<!-- #contentModal previously had no trigger anywhere in the app, so the content
+		     list was unreachable. It now holds the homebrew import, so it needs one. -->
+		<button type="button" class="btn btn-default" data-toggle="modal" data-target="#contentModal">
+			Manage Content
+		</button>
 	</div>
 	<div class="search--reset">
 		<button class="btn btn-danger" ng-click="vm.resetFilters()">Reset Filters</button>
@@ -120,6 +125,50 @@
 				<h4 class="modal-title" id="myModalLabel">Manage Content</h4>
 			</div>
 			<div class="modal-body">
+				<h5>Your imported content</h5>
+				<ul>
+					<li class="row search--content-row" ng-repeat="pack in imported">
+						<div class="col-lg-1">
+							<button class="btn btn-danger" ng-click="removeImported(pack.name)">
+								<i class="fa fa-trash-o"></i>
+							</button>
+						</div>
+						<div class="col-lg-9">
+							{{ pack.name }} &mdash; {{ pack.rows.length }} monsters
+						</div>
+					</li>
+					<li class="row search--content-row" ng-if="!imported.length">
+						<div class="col-lg-12"><em>Nothing imported yet.</em></div>
+					</li>
+					<li class="row search--content-row">
+						<div class="col-lg-12">
+							<input type="file" accept=".csv,.json" file-select="importFile($file)">
+							<p class="help-block">
+								A CSV using the same columns as the community sheet template
+								(<code>name, cr, size, type, tags, alignment, environment, ac, hp</code>),
+								or a JSON array of the same. The file is read in your browser and
+								never uploaded.
+							</p>
+						</div>
+					</li>
+				</ul>
+
+				<div ng-if="importResult">
+					<div class="alert alert-success" ng-if="importResult.added">
+						Imported {{ importResult.added }} monsters from "{{ importResult.sourceName }}".
+					</div>
+					<div class="alert alert-warning" ng-if="importResult.errors.length">
+						<strong>{{ importResult.skipped }} row(s) skipped:</strong>
+						<ul>
+							<li ng-repeat="error in importResult.errors | limitTo:10">{{ error }}</li>
+						</ul>
+						<em ng-if="importResult.errors.length > 10">
+							…and {{ importResult.errors.length - 10 }} more.
+						</em>
+					</div>
+				</div>
+
+				<h5>Built in</h5>
 				<ul>
 					<li class="row search--content-row" ng-repeat="contentDefinition in getContent()">
 						<div class="col-lg-10">
@@ -128,11 +177,6 @@
 						</div>
 					</li>
 				</ul>
-
-				<div>
-					Monster data is built into this site and needs no internet connection.
-					Importing your own content is coming back soon.
-				</div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

@@ -1,0 +1,6 @@
+name,cr,size,type,tags,section,alignment,environment,ac,hp,init,legendary?,unique?,sources
+Clockwork Hound,2,Medium,Construct,Clockwork,,unaligned,urban,14,26,2,,,My Brews: 7
+Gutter Prophet,1/2,Medium,Humanoid,Human,Cultists,chaotic neutral,"urban, ruins",12,18,1,,,My Brews: 9
+"Grubb, the Unclean",1,Small,Humanoid,Goblinoid,,chaotic evil,"cave, ruins",13,22,3,,unique,My Brews: 11
+Rust-Wing Drake,4,Large,Dragon,,,neutral evil,"mountain, ruins",16,68,2,,,My Brews: 14
+Hollow Sovereign,12,Large,Undead,,Hollow Court,lawful evil,"dungeon, planar",18,178,4,legendary,unique,My Brews: 21

@@ -34,9 +34,10 @@
 > green. See that section for the three pre-existing spec failures resolved and a latent
 > `#/test` route crash fixed. `npm run build` remains broken and is not on the critical path.
 >
-> **Phase 3 is done — the app works again.** 3,369 monsters load from SQLite in the
-> browser; search, filters and encounter maths all verified. Suite is 55 green. One
-> deliberate deviation and one real bug are recorded in that section.
+> **Phases 3 and 4 are done — the app works again, homebrew included.** 3,369 monsters
+> load from SQLite in the browser; search, filters and encounter maths all verified, and
+> CSV/JSON homebrew import round-trips through a page reload. Suite is 75 green. One
+> deliberate deviation and three real bugs are recorded in those sections.
 >
 > **Phase 2 is done** — `npm run data` builds `data/monsters.db` (1.86 MB) with all gates
 > passing. It needs **no dependencies at all**: Node 24's built-in `node:sqlite` replaces
@@ -929,7 +930,56 @@ quota forever, which the Phase 4 homebrew overlay now competes for.
 
 ---
 
-### ⚠️ Phase 4 — Replace the custom-content feature (IN SCOPE — decided)
+### ✅ Phase 4 — Custom content replaced — DONE
+
+Homebrew import works, verified end to end in a browser by driving the real
+`<input type="file">` with a real `File` object — not by calling the service directly:
+
+- Importing `data/homebrew-example.csv` took the catalog from 3,369 → **3,374** monsters
+- The pack registers as an enabled `Homebrew` source and appears in the source filter
+- **Survives a genuine page reload** (restored from `localStorage`, confirmed with a
+  window-marker check to prove the document really was re-created)
+- An imported monster renders identically to a built-in one:
+  `Hollow Sovereign / Hollow Court | 12 | Large | Undead | lawful evil | My Brews p.21`
+- Removing via the real trash button takes it back to 3,369, clears the source filter
+  entry, and empties the stored value
+
+New files: `app/services/homebrew.service.js`, `app/services/csv.service.js`,
+`app/common/file-select.directive.js`, plus `data/homebrew-example.csv` as a template —
+the old flow pointed users at a Google Sheets template, so they need something to copy.
+
+**Design points**
+
+- Imported rows are mapped to the *same shape* `monsters.service`'s SQL produces and go
+  through the identical `monsterFactory.Monster` path. An imported monster is not a
+  second-class citizen on a separate code path.
+- `fid`s are namespaced `homebrew.<pack>.<monster>`, so an import can never collide with a
+  built-in, and the import is rejected if a `fid` already exists.
+- Validation mirrors the build-db gates: unknown CR, unknown size, missing name/type are
+  each reported **with the user's line number**, and valid rows still import. The Sheets
+  path failed silently; this does not.
+- The pack is the source, so its filter checkbox governs its monsters. A page number in the
+  file is kept; a source *name* in the file is ignored.
+- Column names accept the community template's spelling with or without `?`
+  (`legendary?` / `legendary`), and both `.csv` and a JSON array are accepted.
+- Quota guard: 1 MB per import, 2 MB total, refused with a message rather than letting
+  `QuotaExceededError` surface somewhere less obvious.
+
+🔴 **`#contentModal` had no trigger anywhere in the app** — the content list was
+unreachable dead UI before this. It now hosts the importer, so a "Manage Content" button
+was added next to "Set Sources".
+
+⚠️ **`removeSheet()` had a latent bug worth recording**: it deleted
+`miscLib.sourceFilters[name]` using the global `name` instead of its own argument, so it
+never actually removed a source filter. `removeCustom()` does it correctly.
+
+**Test suite: 55 → 75 passing** (20 new specs covering CSV parsing with quoted
+commas, validation failures and their line numbers, fid namespacing, duplicate handling,
+JSON import, persistence and restore, and corrupt-storage recovery).
+
+---
+
+#### Original Phase 4 plan
 
 Today `sheetManager.addContent(name, url)` attaches any published Google Sheet of homebrew
 at runtime. A static SQLite file can't accept a runtime URL, so without a replacement users
@@ -999,7 +1049,7 @@ a working test runner.)*
 | 1.5 | Green spec suite on unmodified `master` (47/47) | Low | ✅ **Tests done**; build outstanding |
 | 2 | `data/monsters.db` (1.86 MB) + validating build script | Low | ✅ **Done** |
 | 3 | `db.service.js` + vendored `sql.js`; sheet loaders and inline blob deleted | Medium | ✅ **Done** |
-| 4 | Homebrew local-file import | Medium | ✅ In scope |
+| 4 | Homebrew local-file import | Medium | ✅ **Done** |
 | 5 | Verification | — | Required |
 | 6 | SQL-side filtering, `build/` removal, AngularJS | Low | Deferred |
 
