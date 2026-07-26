@@ -157,6 +157,50 @@ describe('PartyLevel Service', function() {
       expect(totalExp.hard).toEqual(36);
       expect(totalExp.deadly).toEqual(48);
     });
-    
+
+  });
+
+  // The 5em-encounter conversion is a migration from a much older format that held
+  // { partyLevel, playerCount }. encounter.freeze() now writes { groups } instead, with
+  // no partyLevel — converting that stored level: undefined, after which every read of
+  // totalPartyExpLevels threw, permanently, because the bad value was already saved.
+  describe('resilience to unexpected stored data', function() {
+    it('should ignore a modern {groups} encounter rather than corrupting itself', function() {
+      store.hasKey.withArgs("5em-party-info").returns(false);
+      store.get.withArgs("5em-encounter").returns($q.when({ groups: { 'mm.goblin': 2 } }));
+
+      partyInfo.initialize();
+      $rootScope.$apply();
+
+      expect(store.set).not.toHaveBeenCalled();
+      expect(partyInfo.partyLevels[0].level.level).toEqual(1);
+      expect(function () { return partyInfo.totalPartyExpLevels; }).not.toThrow();
+    });
+
+    it('should recover from an already-corrupted [{}] party info', function() {
+      store.hasKey.withArgs("5em-party-info").returns(true);
+      store.get.withArgs("5em-party-info").returns($q.when([{}]));
+
+      partyInfo.initialize();
+      $rootScope.$apply();
+
+      expect(partyInfo.partyLevels[0].level.level).toEqual(1);
+      expect(function () { return partyInfo.totalPartyExpLevels; }).not.toThrow();
+    });
+
+    it('should drop only the unusable entries when some are valid', function() {
+      store.hasKey.withArgs("5em-party-info").returns(true);
+      store.get.withArgs("5em-party-info").returns($q.when([
+        { level: 2, playerCount: 4 },
+        {},
+        { level: 99, playerCount: 1 }
+      ]));
+
+      partyInfo.initialize();
+      $rootScope.$apply();
+
+      expect(partyInfo.partyLevels.length).toEqual(1);
+      expect(partyInfo.partyLevels[0].level.level).toEqual(2);
+    });
   });
 });

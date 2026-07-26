@@ -23,6 +23,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { DatabaseSync } from "node:sqlite";
 import { loadAngularService } from "./lib/angular-meta.mjs";
+import {
+	alignmentFlags, sizeSort, intOrNull, textIfNotNumeric, crLabel, kebab, splitList,
+} from "./lib/transform.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(root, "data/monsters.db");
@@ -46,43 +49,20 @@ log(`  sources in       : ${sources.length}`);
 log(`  CR rows          : ${Object.keys(crInfo).length}  (from app/meta/crInfo.js)`);
 log(`  alignments       : ${Object.keys(alignments).length}  (from app/meta/alignments.js)`);
 
-// ── Ported from monsterfactory.js ───────────────────────────────────────────
-
-const SIZE_SORT = { Tiny: 1, Small: 2, Medium: 3, Large: 4, Huge: 5, Gargantuan: 6 };
-
-// Order matters: "neutral" and "any" are substrings of more specific alignments, so they
-// are tested last. Mirrors alignmentTestOrder in monsterfactory.js:134-155.
-const ALIGNMENT_ORDER = [
-	"any_chaotic", "any_evil", "any_good", "any_lawful", "any_neutral",
-	"non_chaotic", "non_evil", "non_good", "non_lawful", "unaligned",
-	"lg", "ng", "cg", "ln", "cn", "le", "ne", "ce", "n", "any",
-].map((k) => alignments[k]);
+// ── Ported from monsterfactory.js (see scripts/lib/transform.mjs) ───────────
 
 function parseAlignmentFlags(text, fid) {
-	const flags = String(text || "")
-		.split(/\s*(,|or|,\s*or)\s*/i)
-		.reduce((total, part) => {
-			const hit = ALIGNMENT_ORDER.find((a) => part.match(a.regex));
-			return total | (hit ? hit.flags : 0);
-		}, 0);
+	const flags = alignmentFlags(text, alignments);
 
-	if (!flags) {
+	if (flags === null) {
 		// monsterfactory.js:109 console.warns and falls through to unaligned. A silent
 		// fallback in a build script is how bad data reaches production, so fail instead.
 		fail.push(`unparseable alignment on ${fid}: ${JSON.stringify(text)}`);
 		return alignments.unaligned.flags;
 	}
+
 	return flags;
 }
-
-const intOrNull = (v) => {
-	if (v === null || v === undefined || v === "") return null;
-	return /^-?\d+$/.test(String(v).trim()) ? parseInt(v, 10) : null;
-};
-// Keep the raw string only when it is not cleanly numeric — monsterfactory.js:25-36
-// parses an int and falls back to the raw value for things like "18 (natural armor)".
-const textIfNotNumeric = (v) =>
-	(v === null || v === undefined || v === "" || intOrNull(v) !== null) ? null : String(v);
 
 // ── Schema ──────────────────────────────────────────────────────────────────
 
@@ -290,14 +270,14 @@ for (const m of monsters) {
 		fail.push(`unknown cr on ${m.fid}: ${JSON.stringify(m.cr)}`);
 		continue;
 	}
-	const sizeSort = SIZE_SORT[m.size];
-	if (!sizeSort) fail.push(`unknown size on ${m.fid}: ${JSON.stringify(m.size)}`);
+	const sort = sizeSort(m.size);
+	if (sort === -1) fail.push(`unknown size on ${m.fid}: ${JSON.stringify(m.size)}`);
 
 	const searchable = [m.name, m.section, m.type, ...(m.tags || [])]
 		.filter(Boolean).join(" ").toLowerCase();
 
 	const id = Number(insMonster.run(
-		m.fid, m.guid || null, m.name, m.section || null, m.size || null, sizeSort || -1,
+		m.fid, m.guid || null, m.name, m.section || null, m.size || null, sort,
 		m.type, crNumeric,
 		intOrNull(m.ac), intOrNull(m.hp), intOrNull(m.init),
 		textIfNotNumeric(m.ac), textIfNotNumeric(m.hp),

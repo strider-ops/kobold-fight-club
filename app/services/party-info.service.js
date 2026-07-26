@@ -96,18 +96,37 @@
 				return;
 			}
 
-			service.partyLevels = [];
+			var loaded = [];
 
 			_.forEach(frozenDataArray, function(frozenData) {
-				service.partyLevels.push({
-					level: playerLevels[frozenData.level],
+				var level = playerLevels[frozenData && frozenData.level];
+
+				// Skip anything that does not name a real level. Without this an entry
+				// with no level survives as { level: undefined }, and every later read of
+				// totalPartyExpLevels throws on partyLevel.level.easy — permanently, since
+				// the bad value is already in storage. See loadFromEncounterStoreAndConvert.
+				if ( !level ) {
+					return;
+				}
+
+				loaded.push({
+					level: level,
 					playerCount: frozenData.playerCount
 				});
 			});
+
+			// Nothing usable was stored, so keep the defaults rather than an empty party.
+			if ( loaded.length ) {
+				service.partyLevels = loaded;
+			}
 		}
 
 		function loadFromEncounterStoreAndConvert(frozenData) {
-			if ( !frozenData ) {
+			// This is a migration from a much older format, when 5em-encounter held
+			// { partyLevel, playerCount }. encounter.freeze() now writes { groups } — no
+			// partyLevel at all — so without this shape check the conversion below stores
+			// level: undefined and every difficulty calculation throws from then on.
+			if ( !frozenData || frozenData.partyLevel === undefined ) {
 				return;
 			}
 

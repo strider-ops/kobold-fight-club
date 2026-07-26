@@ -18,7 +18,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseCsv, toObjects, norm, parseSources } from "./lib/csv.mjs";
+import { parseCsv, toObjects } from "./lib/csv.mjs";
+import { norm, parseSources, crLabel, kebab } from "./lib/transform.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(root, "data/reconciled");
@@ -239,9 +240,6 @@ const codeFor = (book) => {
 	return [...tally.entries()].sort((a, b) => b[1] - a[1])[0][0];
 };
 
-const kebab = (s) => s.toLowerCase().replace(/['’]/g, "")
-	.replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-
 const takenFids = new Set(sheetRows.map((r) => r.fid).filter(Boolean));
 const minted = [];
 
@@ -314,11 +312,6 @@ for (const m of minted) {
 		stats: e.stats || null,
 		origin: "embedded",
 	});
-}
-
-/** Embedded cr is numeric; the sheets and crInfo.js use fraction labels. */
-function crLabel(n) {
-	return ({ 0.125: "1/8", 0.25: "1/4", 0.5: "1/2" })[n] ?? String(n);
 }
 
 // ── Resolve duplicate display names ─────────────────────────────────────────

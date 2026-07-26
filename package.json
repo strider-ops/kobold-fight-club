@@ -70,8 +70,11 @@
     "inspect-sheets": "node scripts/inspect-sheets.mjs",
     "reconcile": "node scripts/reconcile.mjs",
     "build-db": "node --no-warnings scripts/build-db.mjs",
-    "data": "npm run reconcile && npm run build-db",
-    "watch-html": "nodemon -e html -x \"gulp template-cache\""
+    "data": "npm run reconcile && npm run build-db && npm run verify",
+    "watch-html": "nodemon -e html -x \"gulp template-cache\"",
+    "test-scripts": "node --test \"scripts/lib/*.test.mjs\"",
+    "verify": "node --no-warnings scripts/verify.mjs",
+    "check": "npm run test-scripts && npm run test-single && npm run verify"
   },
   "repository": {
     "type": "git",

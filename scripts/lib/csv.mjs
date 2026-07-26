@@ -31,21 +31,4 @@ export function toObjects(rows) {
 		.map((r) => Object.fromEntries(header.map((h, i) => [h, (r[i] ?? "").trim()])));
 }
 
-/** Normalised join key — the README's fid transform: lowercase alphanumerics only. */
-export function norm(s) {
-	return (s || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
-}
-
-/**
- * Split a `sources` cell into { name, page } parts.
- * "Out of the Abyss: 235, Mordenkainen's Tome of Foes: 143" → two entries.
- * Mirrors the grammar monsterfactory.js:49-72 already parses.
- */
-export function parseSources(cell) {
-	return (cell || "").split(/\s*,\s*/).filter(Boolean).map((raw) => {
-		const m = raw.match(/^(.*?):\s*(.*)$/);
-		return m
-			? { name: m[1].trim(), page: m[2].trim() }
-			: { name: raw.trim(), page: "" };
-	});
-}
+// norm() and parseSources() live in ./transform.mjs with the other pure transforms.

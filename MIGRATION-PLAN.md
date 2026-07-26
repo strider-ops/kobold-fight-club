@@ -34,10 +34,11 @@
 > green. See that section for the three pre-existing spec failures resolved and a latent
 > `#/test` route crash fixed. `npm run build` remains broken and is not on the critical path.
 >
-> **Phases 3 and 4 are done — the app works again, homebrew included.** 3,369 monsters
-> load from SQLite in the browser; search, filters and encounter maths all verified, and
-> CSV/JSON homebrew import round-trips through a page reload. Suite is 75 green. One
-> deliberate deviation and three real bugs are recorded in those sections.
+> **Phases 3, 4 and 5 are done — the app works again, homebrew included, and verified.**
+> 3,369 monsters load from SQLite in the browser. `npm run check` runs 21 script tests,
+> 78 browser specs and a field-by-field diff of all 3,329 shared rows against the original
+> sheets — all green. Saved encounters round-trip across a reload for both `guid`- and
+> `fid`-keyed monsters. One deliberate deviation and five real bugs are recorded below.
 >
 > **Phase 2 is done** — `npm run data` builds `data/monsters.db` (1.86 MB) with all gates
 > passing. It needs **no dependencies at all**: Node 24's built-in `node:sqlite` replaces
@@ -1004,7 +1005,83 @@ migration — not deferred, and not dropped.
 
 ---
 
-### Phase 5 — Verify
+### ✅ Phase 5 — Verify — DONE
+
+```bash
+npm run check      # 21 script tests + 78 browser specs + full data verification
+```
+
+**`scripts/verify.mjs` is the automated gate.** It exits non-zero on any regression, so it
+can run in CI. The plan asked for a golden-output diff against "the monster list from the
+current (cached) app" — that is impossible, because the app's pipeline has been dead since
+the v3 shutdown and there is no pre-migration output left to capture. The equivalent is
+done against the real golden source: the recovered CSVs themselves, **field by field, for
+all 3,329 shared rows** (name, cr, size, type, section, alignment, ac, hp, init, legendary,
+lair, unique, tags, environments, printings).
+
+| Check | Result |
+|---|---|
+| Row-count reconciliation | ✓ 3,369 = 3,370 − 1 CR-less |
+| `fid` continuity (the saved-encounter regression) | ✓ all 3,330 present bar the known CR-less row |
+| `guid` preservation | ✓ 1,543 checked |
+| Display-name uniqueness | ✓ 3,369 distinct; 133 renames are suffix-only |
+| Referential integrity | ✓ no dangling source, printing-less monster, or orphan stat block |
+| Alignment / CR / size_sort validity | ✓ 0 unparsed, 0 unresolved, 0 out of range |
+| FTS5 index | ✓ returns matches |
+| **Golden field-by-field diff** | ✓ **3,329 rows match** |
+
+**Unit tests for the build transforms** (the plan's first bullet) now exist:
+`scripts/lib/transform.test.mjs`, 21 tests via `node:test` — no dependency added. The pure
+transforms were extracted from `build-db.mjs`/`reconcile.mjs` into `scripts/lib/transform.mjs`
+to make them testable; the refactor is proven behaviour-preserving because
+`data/reconciled/monsters.json` came out **byte-identical** to the committed version.
+
+Alignment ordering is pinned by test — `"neutral evil"` contains `"neutral"` and
+`"any chaotic"` contains `"any"`, so getting the ladder order wrong silently mislabels
+hundreds of monsters.
+
+**Two accepted deviations**, both reported by name every run:
+
+1. `cc.abyssal-eviscerator` dropped (no CR) — was already broken pre-migration.
+2. Four Monsters of the Guild rows list **"grassland" twice**; the join tables store it
+   once. The de-duplication is invisible to the app, since `indexOf()` behaves identically.
+
+**Manual checks, all verified in a browser**
+
+| Check | Result |
+|---|---|
+| Search | ✓ |
+| Every filter, especially environment | ✓ environment narrows 45 → 11 pages, no `TypeError` |
+| Encounter build | ✓ 3 Goblins → 150 XP → 300 adjusted → "Hard" |
+| Random encounter | ✓ reads `byCr` correctly; 1× Dretch + 5× Lemure → Medium |
+| **Save / load across a page reload** | ✓ resolves both a real `guid` **and** a minted `fid` |
+| Party setup | ✓ 4×L5 + 2×L3 → easy 1150 / medium 2300 / hard 3450 / deadly 5200 |
+| Homebrew import | ✓ (Phase 4) |
+
+🔴 **A pre-existing crash found and fixed while verifying save/load.**
+`party-info.service.js` has a migration path for a *much* older `5em-encounter` format
+holding `{ partyLevel, playerCount }`. `encounter.freeze()` now writes `{ groups }`, which
+has no `partyLevel`, so the conversion stored `level: undefined` — and from then on **every**
+read of `totalPartyExpLevels` threw `Cannot read properties of undefined (reading 'easy')`,
+permanently, because the bad value was already saved. Two guards added: the conversion now
+requires the legacy shape, and loading skips entries that name no real level so an
+already-corrupted `[{}]` heals itself. Three specs cover it; the pre-existing party-info
+specs still pass, confirming the legitimate legacy path is untouched.
+
+*Honest note:* I hit this by calling `encounter.freeze()` by hand — nothing in the app
+calls it, so this is not reachable by normal use today. It is reachable for a returning
+user whose storage still holds a `5em-encounter` key from an older build, and the failure
+is permanent, which is why the guard is worth keeping.
+
+⚠️ **Also found, not fixed:** `encounter.freeze()` has no callers and `encounter.thaw()`
+is an empty stub — it reads `5em-encounter` and discards it. **Restoring the in-progress
+encounter across a page load has never worked.** Named save/load via the Encounter Manager
+is a different path and does work. Out of scope for a data-layer migration; worth its own
+issue.
+
+---
+
+#### Original Phase 5 plan
 
 - Unit tests for `build-db.mjs` parsing (alignment, sources, environments, CR, ability pairs).
 - ⚠️ **Re-enable the deferred spec.** Change `xit` back to `it` in
@@ -1050,7 +1127,7 @@ a working test runner.)*
 | 2 | `data/monsters.db` (1.86 MB) + validating build script | Low | ✅ **Done** |
 | 3 | `db.service.js` + vendored `sql.js`; sheet loaders and inline blob deleted | Medium | ✅ **Done** |
 | 4 | Homebrew local-file import | Medium | ✅ **Done** |
-| 5 | Verification | — | Required |
+| 5 | Verification (`npm run check`) | — | ✅ **Done** |
 | 6 | SQL-side filtering, `build/` removal, AngularJS | Low | Deferred |
 
 Phases 1–3 restore a **currently non-functional application**. Phase 1 was the highest
