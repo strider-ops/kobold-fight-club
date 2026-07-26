@@ -34,6 +34,10 @@
 > green. See that section for the three pre-existing spec failures resolved and a latent
 > `#/test` route crash fixed. `npm run build` remains broken and is not on the critical path.
 >
+> **Phase 3 is done — the app works again.** 3,369 monsters load from SQLite in the
+> browser; search, filters and encounter maths all verified. Suite is 55 green. One
+> deliberate deviation and one real bug are recorded in that section.
+>
 > **Phase 2 is done** — `npm run data` builds `data/monsters.db` (1.86 MB) with all gates
 > passing. It needs **no dependencies at all**: Node 24's built-in `node:sqlite` replaces
 > `better-sqlite3`, which turned out to be unbuildable here. Two more plan errors corrected:
@@ -834,7 +838,54 @@ fails the build; a CR that is missing skips the row with a warning.
 
 ---
 
-### Phase 3 — Swap the client data layer
+### ✅ Phase 3 — Swap the client data layer — DONE
+
+**The application works again.** Verified in a browser: 3,369 monsters load, 34 CR
+buckets, 32 sources. Search, the source filter, and the environment filter (§1b's
+guaranteed `TypeError`) all work. Adding 3 Goblins gives Total XP 150 → Adjusted XP 300 →
+"Hard" for a level-1 party of four, which is the correct 5e result.
+
+⚠️ **Deliberate deviation from the plan below.** The plan called for `parseAlignment`,
+`parseSize` and the source regex to become no-ops, reading the precomputed
+`alignment_flags` / `size_sort` / `searchable` columns instead. **That was not done.**
+`monsters.service.js` shapes its SQL output to look exactly like the old sheet rows —
+delimited strings, CR labels — and feeds it through an **unmodified**
+`monsterFactory.Monster`. Changing where the data comes from *and* how monster objects are
+built in one step would make any regression impossible to attribute to one or the other,
+and the plan's own instruction two paragraphs down is "one change at a time". The
+precomputed columns are built and sitting in the database, unused, until Phase 6 — which
+is also where the plan already defers the rest of the filtering work.
+
+Two things found while doing it:
+
+1. 🔴 **`unique_npc` had to be aliased back to `unique` in the SQL.** The column is named
+   `unique_npc` only because `unique` is a reserved word, but `monsterfactory.js:47` reads
+   `args.unique`. Without the alias every monster silently becomes non-unique, which would
+   have quietly broken the "unique" filter and random-encounter generation.
+2. ⚠️ **`all` / `byId` / `byCr` were module-level globals** in the old service, outside the
+   factory. That works in a browser (one injector per page load) but leaks state between
+   tests. They are now scoped to the injector, which is both correct Angular and what
+   makes the restored spec reliable.
+
+**Test suite: 47 → 55 passing.** The deferred spec is restored, but it could not simply be
+un-`xit`-ed: it asserted a *synchronous* side effect that no longer exists now that loading
+is async. It is rewritten to mock `db` and assert the real load path — byId keying, byCr
+grouping, name sort, delimited-column parsing, multi-source page numbers, boolean flags,
+and source registration with default filter states.
+
+⚠️ **Deployment note.** The `.wasm` must be served as `application/wasm`. `http-server`
+does not, and sql.js falls back to slower `ArrayBuffer` instantiation with a console
+warning. GitHub Pages sets it correctly, so this only affects local dev.
+
+`search.controller.js` went from **647 KB to 2.9 KB** — the inline `var data = [...]` blob,
+`hackSources()`, and the five duplicated filter functions are all gone.
+
+The Custom Content modal is now a read-only list of the content packs built into the
+database. Phase 4 replaces it with the file import.
+
+---
+
+#### Original Phase 3 plan
 
 **New — `app/services/db.service.js`**
 Loads `sql.js` (WASM), fetches `data/monsters.db` as an ArrayBuffer, opens it, exposes a
@@ -947,7 +998,7 @@ a working test runner.)*
 | 1 | Reconciled dataset (3,370) + 40 minted `fid`s + 133 name suffixes | Low–Med | ✅ **Done** |
 | 1.5 | Green spec suite on unmodified `master` (47/47) | Low | ✅ **Tests done**; build outstanding |
 | 2 | `data/monsters.db` (1.86 MB) + validating build script | Low | ✅ **Done** |
-| 3 | `db.service.js` + vendored `sql.js`; sheet loaders and inline blob deleted | Medium | Blocked by 2 |
+| 3 | `db.service.js` + vendored `sql.js`; sheet loaders and inline blob deleted | Medium | ✅ **Done** |
 | 4 | Homebrew local-file import | Medium | ✅ In scope |
 | 5 | Verification | — | Required |
 | 6 | SQL-side filtering, `build/` removal, AngularJS | Low | Deferred |

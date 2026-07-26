@@ -122,41 +122,16 @@
 			<div class="modal-body">
 				<ul>
 					<li class="row search--content-row" ng-repeat="contentDefinition in getContent()">
-						<div class="col-lg-1">
-							<button
-								ng-disabled="!contentDefinition.custom"
-								class="btn btn-danger"
-								ng-click="removeCustom(contentDefinition.id)"
-							>
-								<i class="fa fa-trash-o"></i>
-							</button>
-						</div>
-						<div class="col-lg-9">
+						<div class="col-lg-10">
 							{{ contentDefinition.name }}
-							(Last updated: {{ contentDefinition.updated }})
-							<div>
-								<a
-									class="search--sheet-link"
-									ng-href="https://docs.google.com/spreadsheets/d/{{ contentDefinition.id }}/"
-								>{{ contentDefinition.id }}</a>
-							</div>
-						</div>
-					</li>
-					<li class="row search--content-row">
-						<div class="col-lg-5">
-							<input class="form-control" placeholder="Name" ng-model="customName">
-						</div>
-						<div class="col-lg-5">
-							<input class="form-control" placeholder="URL or ID" ng-model="customUrl">
-						</div>
-						<div class="col-lg-2">
-							<button class="btn btn-primary" ng-click="addCustom()">Add</button>
+							<span ng-if="contentDefinition.shortName">({{ contentDefinition.shortName }})</span>
 						</div>
 					</li>
 				</ul>
 
 				<div>
-					<a href="https://github.com/Asmor/5e-monsters/wiki/Extra-content-for-KFC">Add additional content</a>
+					Monster data is built into this site and needs no internet connection.
+					Importing your own content is coming back soon.
 				</div>
 			</div>
 			<div class="modal-footer">

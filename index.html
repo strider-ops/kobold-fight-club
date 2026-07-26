@@ -29,6 +29,10 @@
 	<script src="thirdparty/angular-touch/angular-touch.js"></script>
 	<script src="thirdparty/dirPagination/dirPagination.js"></script>
 	<script src="thirdparty/angular-local-storage/angular-local-storage.js"></script>
+	<!-- SQLite compiled to WebAssembly, reading data/monsters.db in the browser.
+	     Vendored rather than loaded from a CDN: this app broke once already because it
+	     depended on an outside service, and vendoring keeps it working offline. -->
+	<script src="vendor/sql.js/sql-wasm.js"></script>
 
 	<!-- build:js js/app.js-->
 	<!-- inject:js -->
@@ -71,6 +75,7 @@
 	<script src="app/players/players.controller.js"></script>
 	<script src="app/services/actionQueue.service.js"></script>
 	<script src="app/services/combat.service.js"></script>
+	<script src="app/services/db.service.js"></script>
 	<script src="app/services/encounter.service.js"></script>
 	<script src="app/services/integration.service.js"></script>
 	<script src="app/services/library.service.js"></script>
@@ -80,8 +85,6 @@
 	<script src="app/services/party-info.service.js"></script>
 	<script src="app/services/players.service.js"></script>
 	<script src="app/services/randomencounter.service.js"></script>
-	<script src="app/services/sheet-loader.service.js"></script>
-	<script src="app/services/sheet-manager.service.js"></script>
 	<script src="app/services/sources.service.js"></script>
 	<script src="app/services/store.service.js"></script>
 	<script src="app/test.controller.js"></script>

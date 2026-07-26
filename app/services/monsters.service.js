@@ -3,147 +3,135 @@
 
 	angular.module("app").factory("monsters", Monsters);
 
-	var all = [];
-	var byId = {};
-	var byCr = {};
-	var loaded = {};
-	var sourcesById = {};
+	/**
+	 * The columns are deliberately shaped to match what the Google Sheets rows used to
+	 * look like — delimited strings for tags/environment/sources, a CR label rather than
+	 * a number — so that monsterFactory.Monster can consume them completely unchanged.
+	 *
+	 * That means the parsing monsterFactory already does is still done at load time
+	 * rather than read from the precomputed columns (alignment_flags, size_sort,
+	 * searchable) that build-db.mjs also writes. That is intentional for this phase:
+	 * changing where the data comes from and how monster objects are built in the same
+	 * step would make any regression impossible to attribute to one or the other.
+	 * Phase 6 switches to the precomputed columns, once Phase 5 is green.
+	 *
+	 * COALESCE to '' rather than leaving NULLs, because the sheets never produced null —
+	 * they produced empty strings, and Monster's parsing depends on that distinction
+	 * (e.g. Number.parseInt("") is NaN and falls back to "", which templates render as
+	 * blank, whereas null would surface differently).
+	 */
+	var MONSTER_SQL = [
+		"SELECT m.fid, COALESCE(m.guid, '') AS guid, m.name,",
+		"       COALESCE(m.section, '') AS section,",
+		"       COALESCE(m.ac, m.ac_text, '') AS ac,",
+		"       COALESCE(m.hp, m.hp_text, '') AS hp,",
+		"       COALESCE(m.init, '') AS init,",
+		"       c.label AS cr, m.type, m.size,",
+		"       COALESCE(m.alignment_text, '') AS alignment,",
+		// aliased back to `unique`: the column is unique_npc only because `unique` is a
+		// reserved word in SQL, but monsterfactory.js reads args.unique.
+		"       m.legendary, m.lair, m.unique_npc AS \"unique\", m.special,",
+		"       (SELECT group_concat(t.name, ', ') FROM monster_tag mt",
+		"          JOIN tag t ON t.id = mt.tag_id WHERE mt.monster_id = m.id) AS tags,",
+		"       (SELECT group_concat(e.name, ', ') FROM monster_environment me",
+		"          JOIN environment e ON e.id = me.environment_id",
+		"         WHERE me.monster_id = m.id) AS environment,",
+		"       (SELECT group_concat(",
+		"                 CASE WHEN p.page IS NOT NULL THEN s.name || ': ' || p.page",
+		"                      WHEN p.url  IS NOT NULL THEN s.name || ': ' || p.url",
+		"                      ELSE s.name END, ', ')",
+		"          FROM monster_printing p JOIN source s ON s.id = p.source_id",
+		"         WHERE p.monster_id = m.id) AS sources",
+		"  FROM monster m",
+		"  JOIN cr c ON c.numeric = m.cr_numeric",
+	].join("\n");
 
-	Monsters.$inject = ["$rootScope", "misc", "monsterFactory"];
-	function Monsters($rootScope, miscLib, monsterFactory) {
-		function loadSheet(args) {
-			var sheets = args.sheets;
-			var sheetId = args.sheetId;
-			var custom = args.custom;
+	var SOURCE_SQL =
+		"SELECT name, COALESCE(short_name, '') AS shortname, COALESCE(type, '') AS type," +
+		"       default_selected FROM source ORDER BY name";
 
-			if ( loaded[sheetId] ) {
-				// Don't allow a source to be loaded multiple times
-				return;
-			}
-
-			loaded[sheetId] = true;
-
-			loadMonsters({
-				$rootScope: $rootScope,
-				miscLib: miscLib,
-				monsterFactory: monsterFactory,
-				sheetId: sheetId,
-				custom: custom,
-				sheets: sheets,
-			});
-		}
+	Monsters.$inject = ["$q", "db", "misc", "monsterFactory"];
+	function Monsters($q, db, miscLib, monsterFactory) {
+		// Scoped to the injector rather than the module. These were module-level
+		// globals, which works in a browser (one injector per page load) but leaks
+		// state between tests, where every spec builds a fresh injector.
+		var all = [];
+		var byId = {};
+		var byCr = {};
+		var loadPromise = null;
 
 		return {
 			all: all,
 			byCr: byCr,
 			byId: byId,
 			check: monsterFactory.checkMonster,
-			loadSheet: loadSheet,
-			removeSheet: removeSheet.bind(null, miscLib),
+			load: load,
 		};
-	}
 
-	function loadMonsters(args) {
-		var $rootScope = args.$rootScope;
-		var miscLib = args.miscLib;
-		var monsterFactory = args.monsterFactory;
-		var sheetId = args.sheetId;
-		var custom = args.custom;
-		var sheets = args.sheets;
-
-		sheets.Monsters.forEach(function (monsterData) {
-			monsterData.sheetId = sheetId;
-			var monster = new monsterFactory.Monster(monsterData);
-
-			if ( byId[monster.id] ) {
-				// We already have this monster from some other source, so just merge it
-				// with the existing entry
-				byId[monster.id].merge(monster)
-				return;
+		/**
+		 * Populate all / byCr / byId from the database. Idempotent — every caller after
+		 * the first gets the same promise, so injecting this service from several places
+		 * cannot load the catalog twice.
+		 */
+		function load() {
+			if ( loadPromise ) {
+				return loadPromise;
 			}
 
-			all.push(monster);
-			byId[monster.id] = monster;
+			loadPromise = $q.all([db.query(SOURCE_SQL), db.query(MONSTER_SQL)])
+				.then(function (results) {
+					registerSources(results[0]);
+					addMonsters(results[1]);
 
-			if ( ! byCr[monster.cr.string] ) {
-				byCr[monster.cr.string] = [];
-			}
+					return { monsters: all.length, sources: results[0].length };
+				});
 
-			byCr[monster.cr.string].push(monster);
-		});
+			loadPromise.catch(function () { loadPromise = null; });
 
-		sourcesById[sheetId] = [];
-		sheets.Sources.forEach(function (sourceData) {
-			var name = sourceData.name;
-			var shortName = sourceData.shortname;
-			var initialState = custom || !!(sourceData.defaultselected || "").match(/yes/i);
+			return loadPromise;
+		}
 
-			if ( miscLib.sourceFilters[name] !== undefined ) {
-				console.warn("Duplicate source", name);
-				return;
-			}
-
-			sourcesById[sheetId].push(name);
-			miscLib.sources.push(name);
-			miscLib.sourceFilters[name] = initialState;
-			miscLib.shortNames[name] = shortName;
-
-			if ( !miscLib.sourcesByType[sourceData.type] ) {
-				miscLib.sourcesByType[sourceData.type] = [];
-			}
-
-			miscLib.sourcesByType[sourceData.type].push(name);
-
-			if ( custom ) {
-				$rootScope.$broadcast("custom-source-added", name);
-			}
-		});
-
-		miscLib.sources.sort();
-
-		all.sort(function (a, b) {
-			return (a.name > b.name) ? 1 : -1;
-		});
-	}
-
-	function removeSheet(miscLib, id) {
-		var i = 0;
-		var monsterId;
-		var crString;
-		var crIndex;
-
-		// No longer mark sheet as loaded
-		delete loaded[id];
-
-		// Loop through all the monsters and remove them from all and byCr
-		while ( all[i] ) {
-			if ( all[i].sheetId === id ) {
-				monsterId = all[i].id;
-				delete byId[monsterId];
-				crString = all[i].cr.string;
-				crIndex = byCr[crString].indexOf(all[i]);
-				if ( crIndex !== -1 ) {
-					byCr[crString].splice(crIndex, 1);
+		function registerSources(rows) {
+			rows.forEach(function (row) {
+				if ( miscLib.sourceFilters[row.name] !== undefined ) {
+					console.warn("Duplicate source", row.name);
+					return;
 				}
-				all.splice(i, 1);
-			} else {
-				i++;
-			}
+
+				miscLib.sources.push(row.name);
+				miscLib.sourceFilters[row.name] = !!row.default_selected;
+				miscLib.shortNames[row.name] = row.shortname;
+
+				if ( !miscLib.sourcesByType[row.type] ) {
+					miscLib.sourcesByType[row.type] = [];
+				}
+
+				miscLib.sourcesByType[row.type].push(row.name);
+			});
+
+			miscLib.sources.sort();
 		}
 
-		if ( !sourcesById[id] ) {
-			return;
+		function addMonsters(rows) {
+			rows.forEach(function (row) {
+				var monster = new monsterFactory.Monster(row);
+
+				// Reprints are separate rows with their own fid now, so there is nothing
+				// left to merge — the id collision the old loadMonsters() guarded against
+				// cannot happen. build-db.mjs fails the build on a duplicate fid.
+				all.push(monster);
+				byId[monster.id] = monster;
+
+				if ( !byCr[monster.cr.string] ) {
+					byCr[monster.cr.string] = [];
+				}
+
+				byCr[monster.cr.string].push(monster);
+			});
+
+			all.sort(function (a, b) {
+				return (a.name > b.name) ? 1 : -1;
+			});
 		}
-
-		// Loop through sources and remove them
-		sourcesById[id].forEach(function (sourceName) {
-			i = miscLib.sources.indexOf(sourceName);
-			miscLib.sources.splice(i, 1);
-			delete miscLib.sourceFilters[name];
-			delete miscLib.shortNames[name];
-		});
-
-		delete sourcesById[id];
 	}
 })();
-

@@ -22,11 +22,38 @@
 
 	myApp.run(serviceInitialization);
 
-	serviceInitialization.$inject = ['encounter', 'players', 'partyInfo'];
+	serviceInitialization.$inject = ['encounter', 'players', 'partyInfo', 'monsters'];
 
-	function serviceInitialization(encounter, players, partyInfo) {
+	function serviceInitialization(encounter, players, partyInfo, monsters) {
+		discardStaleSheetCache();
+
 		partyInfo.initialize();
 		encounter.initialize();
 		players.initialize();
+
+		// Fills monsters.all / byCr / byId in place, so the views bound to them update
+		// as soon as it resolves. Failure is surfaced rather than swallowed: the old
+		// JSONP loader's promise never settled on error, which is why a first-time
+		// visitor saw an empty monster list and no explanation.
+		monsters.load().catch(function (error) {
+			console.error("Could not load the monster database.", error);
+		});
+	}
+
+	/**
+	 * One-time cleanup of the pre-SQLite Google Sheets cache. These keys hold a full
+	 * copy of each sheet and are dead weight against a ~5MB localStorage quota that
+	 * saved encounters and imported homebrew now have to share.
+	 */
+	function discardStaleSheetCache() {
+		try {
+			Object.keys(window.localStorage)
+				.filter(function (key) {
+					return key === "5em-sheet-meta" || key.indexOf("5em-sheet-cache:") === 0;
+				})
+				.forEach(function (key) { window.localStorage.removeItem(key); });
+		} catch ( e ) {
+			// Private browsing can make localStorage throw on access. Not fatal.
+		}
 	}
 })();
