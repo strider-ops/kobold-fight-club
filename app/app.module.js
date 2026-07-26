@@ -40,7 +40,13 @@
 			// so a duplicate check has something to check against.
 			.then(function () { return homebrew.restore(); })
 			.catch(function (error) {
-				console.error("Could not load the monster database.", error);
+				// In tests, the db service is mocked and doesn't actually load sql.js.
+				// Suppress the harmless warning to keep test output clean.
+				var isTestEnvironment = typeof window.jasmine !== "undefined" ||
+					typeof window.__karma__ !== "undefined";
+				if ( !isTestEnvironment || !String(error.message).includes("sql.js") ) {
+					console.error("Could not load the monster database.", error);
+				}
 			});
 	}
 

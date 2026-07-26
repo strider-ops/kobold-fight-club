@@ -65,7 +65,7 @@
     "gulp-dev": "gulp --dev",
     "build": "gulp optimize",
     "watch-css": "gulp sass-watcher",
-    "test": "karma start karma.conf.js",
+    "test": "karma start karma.conf.js --single-run",
     "test-single": "karma start karma.conf.js --single-run",
     "inspect-sheets": "node scripts/inspect-sheets.mjs",
     "reconcile": "node scripts/reconcile.mjs",

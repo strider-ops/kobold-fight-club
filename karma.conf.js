@@ -13,6 +13,7 @@ module.exports = function(config) {
       '../thirdparty/lodash.js',
       '../thirdparty/angular-local-storage/angular-local-storage.js',
       '../node_modules/bardjs/dist/bard.js',
+      'test-setup.js',
       '*.js',
       '**/*.js',
       '../scripts/**/*.js'
