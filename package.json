@@ -4,10 +4,14 @@
   "description": "Kobold Fight Club =================",
   "main": "index.html",
   "dependencies": {
+    "@vitejs/plugin-vue": "^6.0.8",
     "angular": "^1.5.9",
     "angular-local-storage": "^0.5.0",
     "angular-touch": "^1.5.9",
-    "angular-ui-router": "^0.3.2"
+    "angular-ui-router": "^0.3.2",
+    "vite": "^8.1.5",
+    "vue": "^3.5.40",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "bardjs": "^0.1.8",
