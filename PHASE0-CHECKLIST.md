@@ -1,58 +1,38 @@
 # Phase 0 — Setup Checklist ✓
 
-## Completed
+## Completed ✓
+
 - [x] Add Vue 3 + Vue Router + Vite to package.json
 - [x] Create `app/vue/` directory structure
 - [x] Create vite.config.js
 - [x] Create app/vue/main.js (Vue entry point)
 - [x] Create app/vue/App.vue (root component)
 - [x] Create app/vue/router/index.js (routing stub)
+- [x] Create app/vue/index.html (HTML entry point)
 - [x] Add npm scripts: `dev:vue`, `build:vue`, `preview:vue`
+- [x] Create app/lib/ shared utility modules:
+  - [x] app/lib/db.js (db service wrapper)
+  - [x] app/lib/monsters.js (monsters service wrapper)
+  - [x] app/lib/store.js (store service wrapper)
 
-## What's Next (Phase 1)
+## Verification Steps
 
-### 1. Refactor Shared Utilities to Plain JS Modules
-Currently these are AngularJS factories. Convert to plain JS exports:
-- `app/services/db.service.js` → Keep as-is (already mostly pure functions)
-- `app/services/monsters.service.js` → Extract logic to `app/lib/monsters.js`
-- `scripts/lib/csv.mjs` → Already plain JS ✓
-- `scripts/lib/transform.mjs` → Already plain JS ✓
+Before starting Phase 1, verify both dev servers work independently:
 
-Location: Create `app/lib/` directory for shared modules.
+```bash
+# Terminal 1: Start AngularJS app
+npm start
+# Should open http://localhost:8084 with full AngularJS UI
 
-### 2. Set Up Hybrid Routing
-The app needs to serve both:
-- `/` → AngularJS (existing app)
-- `/vue/*` → Vue 3 (new app)
-
-Options:
-- **Option A (Recommended):** Keep AngularJS on main port (8084), run Vue dev server on 5173 separately during dev
-- **Option B:** Use Vite as main bundler, proxy AngularJS routes
-
-Choose Option A for simplicity during Phase 0.
-
-### 3. Create HTML Entry Point for Vue
-Create `app/vue/index.html`:
-```html
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kobold Fight Club (Vue)</title>
-</head>
-<body>
-  <div id="vue-app"></div>
-  <script type="module" src="/main.js"></script>
-</body>
-</html>
+# Terminal 2: Start Vue dev server
+npm run dev:vue
+# Should open http://localhost:5173 with Vue stubs
 ```
 
-### 4. Verify Both Versions Work
-- [ ] Start AngularJS: `npm start` → http://localhost:8084
-- [ ] Start Vue dev server: `npm run dev:vue` → http://localhost:5173
-- [ ] Confirm AngularJS app fully functional
-- [ ] Confirm Vue app loads (will show stubs)
+**Checklist:**
+- [ ] AngularJS app at http://localhost:8084 fully functional (search, filters, etc.)
+- [ ] Vue app at http://localhost:5173 loads without errors
+- [ ] Both servers can run simultaneously without conflicts
 
 ---
 

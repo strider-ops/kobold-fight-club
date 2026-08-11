@@ -78,7 +78,10 @@
     "watch-html": "nodemon -e html -x \"gulp template-cache\"",
     "test-scripts": "node --test \"scripts/lib/*.test.mjs\"",
     "verify": "node --no-warnings scripts/verify.mjs",
-    "check": "npm run test-scripts && npm run test-single && npm run verify"
+    "check": "npm run test-scripts && npm run test-single && npm run verify",
+    "dev:vue": "vite app/vue",
+    "build:vue": "vite build app/vue",
+    "preview:vue": "vite preview app/vue"
   },
   "repository": {
     "type": "git",
