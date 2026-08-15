@@ -19,6 +19,11 @@ module.exports = function(config) {
       '../scripts/**/*.js'
     ],
 
+    exclude: [
+      'lib/**',
+      'vue/**'
+    ],
+
     autoWatch: true,
 
     frameworks: ['jasmine', 'sinon', 'jasmine-sinon'],
