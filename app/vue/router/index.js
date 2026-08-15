@@ -1,15 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import Home from '../components/Home.vue';
+import EncounterManager from '../components/EncounterManager.vue';
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: { template: '<div>Vue Home (stub)</div>' }
+    component: Home
   },
   {
     path: '/encounter-manager',
     name: 'EncounterManager',
-    component: { template: '<div>Vue Encounter Manager (stub)</div>' }
+    component: EncounterManager
   }
 ];
 
