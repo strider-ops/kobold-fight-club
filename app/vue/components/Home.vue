@@ -3,11 +3,15 @@
     <h2>Welcome to Kobold Fight Club</h2>
     <p>The encounter building and management tool for D&D 5e.</p>
     <div class="quick-links">
-      <h3>Quick Links:</h3>
+      <h3>Quick Links (Vue):</h3>
       <ul>
+        <li><router-link to="/encounter-builder">Encounter Builder</router-link></li>
         <li><router-link to="/encounter-manager">Manage Encounters</router-link></li>
-        <li><a href="#/encounter-builder">Encounter Builder (AngularJS)</a></li>
-        <li><a href="#/players/manage">Manage Players (AngularJS)</a></li>
+      </ul>
+      <h3>AngularJS Version:</h3>
+      <ul>
+        <li><a href="http://localhost:8080/#/encounter-builder" target="_blank">Encounter Builder (AngularJS)</a></li>
+        <li><a href="http://localhost:8080/#/players/manage" target="_blank">Manage Players (AngularJS)</a></li>
       </ul>
     </div>
   </div>

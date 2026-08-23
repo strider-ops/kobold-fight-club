@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../components/Home.vue';
 import EncounterManager from '../components/EncounterManager.vue';
+import EncounterBuilder from '../components/EncounterBuilder.vue';
 
 const routes = [
   {
@@ -12,6 +13,11 @@ const routes = [
     path: '/encounter-manager',
     name: 'EncounterManager',
     component: EncounterManager
+  },
+  {
+    path: '/encounter-builder',
+    name: 'EncounterBuilder',
+    component: EncounterBuilder
   }
 ];
 
