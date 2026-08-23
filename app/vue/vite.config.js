@@ -6,7 +6,8 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './app/vue'),
+      '@': path.resolve(__dirname, '.'),
+      '@lib': path.resolve(__dirname, '../lib'),
     }
   },
   server: {
@@ -17,7 +18,7 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: 'dist-vue',
+    outDir: '../../dist-vue',
     sourcemap: true
   },
   test: {
