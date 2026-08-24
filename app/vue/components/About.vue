@@ -1,0 +1,30 @@
+<template>
+  <div class="container">
+    <div class="about--logo pull-right">
+      <img src="/images/logo.png" class="img-responsive" alt="Logo">
+    </div>
+
+    <h2>Welcome to Kobold Fight Cemetery, a quick-and-dirty hack to revive the functionality of Kobold Fight Club</h2>
+
+    <h3>Original project:</h3>
+    <a href="http://kobold.club/5e-monsters/help.html" target="_blank">Kobold Fight Club</a>
+
+    <h3>Via Reddit</h3>
+    <a href="http://www.reddit.com/r/asmor" target="_blank">Asmor's Official Subreddit</a>
+
+    <h3>Contact the Maintainers Directly</h3>
+    <dl class="dl-horizontal">
+      <dt>Site Owner:</dt>
+      <dd>Max Wilson</dd>
+      <dd><a href="mailto:wilson.max@gmail.com">wilson.max@gmail.com</a></dd>
+    </dl>
+
+    <p class="about--disclaimer lead">
+      Kobold Fight Cemetery is not associated with Wizards of the Coast.
+    </p>
+  </div>
+</template>
+
+<script setup>
+// Static page - no logic needed
+</script>

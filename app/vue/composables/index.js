@@ -6,3 +6,5 @@ export { useSources } from './useSources';
 export { useFilters } from './useFilters';
 export { useHomebrew } from './useHomebrew';
 export { useMonsterFilter } from './useMonsterFilter';
+export { usePlayers } from './usePlayers';
+export { useCombat } from './useCombat';

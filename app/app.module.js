@@ -22,9 +22,9 @@
 
 	myApp.run(serviceInitialization);
 
-	serviceInitialization.$inject = ['encounter', 'players', 'partyInfo', 'monsters', 'homebrew', 'sources', 'metaInfo', 'store', 'library', 'integration'];
+	serviceInitialization.$inject = ['encounter', 'players', 'partyInfo', 'monsters', 'homebrew', 'sources', 'metaInfo', 'store', 'library', 'integration', 'combat'];
 
-	function serviceInitialization(encounter, players, partyInfo, monsters, homebrew, sources, metaInfo, store, library, integration) {
+	function serviceInitialization(encounter, players, partyInfo, monsters, homebrew, sources, metaInfo, store, library, integration, combat) {
 		discardStaleSheetCache();
 
 		// Expose services to window for Vue components to access
@@ -38,6 +38,7 @@
 		window.storeService = store;
 		window.libraryService = library;
 		window.integrationService = integration;
+		window.combatService = combat;
 
 		partyInfo.initialize();
 		encounter.initialize();

@@ -199,7 +199,20 @@ See `MODERNIZATION-PLAN.md` for full migration strategy. Key points:
 - **Goal:** Replace AngularJS with Vue 3 while keeping app functional
 - **Strategy:** Gradual migration, both frameworks coexist
 - **Phase 1:** ✅ Encounter Manager (complete)
-- **Phase 2:** Search & filters (next)
+- **Phase 2:** ✅ Encounter Builder / Search & Filters (complete)
+- **Phase 3:** ✅ Remaining Pages - About, Players, Battle Setup/Tracker (complete)
+- **Phase 4:** Cutover & Cleanup (next)
 - **Risk:** Medium - comprehensive tests provide regression detection
 
+**Current Status:** All pages migrated to Vue! The entire application is available in Vue 3 at `localhost:5173/vue/`. AngularJS version still runs at `localhost:8080` as a fallback.
+
 The migration uses Vue composables to wrap AngularJS services, allowing Vue components to reuse existing business logic without duplication.
+
+### Vue Pages (All Complete)
+- `/` - Home with navigation
+- `/encounter-builder` - Full encounter builder with filters
+- `/encounter-manager` - Saved encounters library
+- `/players` - Party and player management
+- `/battle-setup` - Pre-battle combatant setup
+- `/battle-tracker` - Active combat tracker
+- `/about` - About page
