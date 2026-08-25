@@ -1,8 +1,9 @@
 <template>
   <div class="container">
-    <div class="about--logo pull-right">
-      <img src="/images/logo.png" class="img-responsive" alt="Logo">
-    </div>
+    <!-- Logo disabled for production build - image path issue -->
+    <!-- <div class="about--logo pull-right">
+      <img src="../../images/logo.png" class="img-responsive" alt="Logo">
+    </div> -->
 
     <h2>Welcome to Kobold Fight Cemetery, a quick-and-dirty hack to revive the functionality of Kobold Fight Club</h2>
 
