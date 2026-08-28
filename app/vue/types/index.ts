@@ -81,10 +81,7 @@ export interface EncounterGroups {
 
 export interface SavedEncounter {
   name: string;
-  groups: Array<{
-    id: string;
-    qty: number;
-  }>;
+  groups: EncounterGroups; // Map of monster ID to MonsterGroup
   reference?: string | null;
 }
 
