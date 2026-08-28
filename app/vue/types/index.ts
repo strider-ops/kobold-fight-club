@@ -134,23 +134,35 @@ export interface PlayerData {
 // ============================================================================
 
 export interface Combatant {
-  id: string; // Unique ID for this combatant instance
+  type: 'player' | 'enemy' | 'lair';
   name: string;
-  ac: number;
-  hp: number;
-  maxHp: number;
-  init: number;
-  initRoll: number; // Rolled initiative
-  isPlayer: boolean;
-  monster?: Monster; // Reference to monster if not a player
+  ac?: number;
+  hp?: number;
+  initiativeMod?: number;
+  advantageOnInitiative?: boolean;
+  initiative: number;
+  damage?: number;
+  id?: string; // Monster ID (for enemies)
+  active?: boolean; // Currently active in turn order
+  fixedInitiative?: boolean; // For lair actions
+  noHp?: boolean; // For lair actions
+  initiativeRolled?: boolean; // Whether initiative was rolled
 }
 
 export interface CombatState {
+  active: number; // Index of active combatant
   combatants: Combatant[];
-  currentIndex: number;
-  round: number;
-  active: boolean;
+  delta: number; // Damage/healing delta being applied
 }
+
+// Combat initialization status constants
+export const CombatStatus = {
+  READY: 1,
+  NO_MONSTERS: 2,
+  NO_PLAYERS: 4,
+} as const;
+
+export type CombatStatusType = typeof CombatStatus[keyof typeof CombatStatus];
 
 // ============================================================================
 // Source/Content Pack Types

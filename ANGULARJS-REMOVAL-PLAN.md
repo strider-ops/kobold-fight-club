@@ -2,14 +2,14 @@
 
 ## Progress Summary
 
-**Overall Progress: Week 2 Complete ✅ (57%)**
+**Overall Progress: Week 3 Partial Complete ✅ (63%)**
 
 - ✅ Week 1: TypeScript Setup + Simple Services (10/10 complete) **DONE**
 - ✅ Week 2: Medium Services (8/8 complete) **DONE**
-- ⬜ Week 3: Complex Services (0/8 complete)
+- 🔄 Week 3: Complex Services (5/8 complete) **IN PROGRESS**
 - ⬜ Week 4: Cleanup & Testing (0/9 complete)
 
-**Total: 18/35 tasks complete (51%)**
+**Total: 23/35 tasks complete (66%)**
 
 ---
 
@@ -887,15 +887,15 @@ describe('StoreService', () => {
 - [x] Write tests for library, players, and partyInfo services (43 tests)
 - [x] TypeScript compilation verified (passes with no errors)
 
-### Week 3: Complex Services (0/8 ⬜ 0%)
-- [ ] Extract `monsters.service.js` → `services/monsters.ts`
-- [ ] Extract `encounter.service.js` → `services/encounter.ts`
-- [ ] Extract `combat.service.js` → `services/combat.ts`
-- [ ] Extract `randomEncounter.service.js` → `services/randomEncounter.ts`
-- [ ] Extract `homebrew.service.js` → `services/homebrew.ts`
-- [ ] Extract remaining support services to TypeScript
+### Week 3: Complex Services (5/8 🔄 63%)
+- [x] Extract `monsters.service.js` → `services/monsters.ts` (from last commit)
+- [x] Extract `encounter.service.js` → `services/encounter.ts` (from last commit)
+- [x] Extract `combat.service.js` → `services/combat.ts` (32 tests)
+- [x] Extract `randomEncounter.service.js` → `services/randomEncounter.ts` (22 tests)
+- [x] Extract `homebrew.service.js` → `services/homebrew.ts` (41 tests)
+- [x] Extract `csv.service.js` → `services/csv.ts` (20 tests)
+- [ ] Extract remaining support services (integration, actionQueue) to TypeScript
 - [ ] Update all composables to use new TypeScript services
-- [ ] Write comprehensive tests
 
 ### Week 4: Cleanup & Testing (0/9 ⬜ 0%)
 - [ ] Remove all AngularJS files (`app/services/*.js`, `app/encounter-builder/`, etc.)
@@ -968,17 +968,25 @@ Converting to **TypeScript** instead of plain JavaScript adds:
 
 ## Current Status & Next Steps
 
-**✅ Week 2 Status:** COMPLETE (8/8 tasks)
+**🔄 Week 3 Status:** PARTIAL COMPLETE (5/8 tasks, 63%)
 
 **Completed This Week:**
-- ✅ 5 services extracted to TypeScript (sources, metaInfo, library, players, partyInfo)
-- ✅ playerLevels constant data extracted
-- ✅ 43 additional Vitest tests written (128 total now passing)
+- ✅ combat.service.js → combat.ts with 32 comprehensive tests
+- ✅ randomEncounter.service.js → randomEncounter.ts with 22 tests
+- ✅ shuffle utility → shuffle.ts with 9 tests
+- ✅ homebrew.service.js → homebrew.ts with 41 tests
+- ✅ csv.service.js → csv.ts with 20 tests
+- ✅ Total: 124 new tests added for week 3 services
 - ✅ TypeScript compilation passing with no errors
-- ✅ Fixed SavedEncounter type definition
 
-**Services Extracted So Far (10 total):**
+**Services Extracted So Far (16 total):**
 - Week 1: store, db, misc, monsterFactory
 - Week 2: sources, metaInfo, library, players, partyInfo, playerLevels
+- Week 3: monsters, encounter, combat, randomEncounter, homebrew, csv, shuffle
 
-**Next Up:** Week 3 - Extract complex services (monsters, encounter, combat, randomEncounter, homebrew) and update composables to use TypeScript services.
+**Remaining Week 3 Tasks:**
+- Extract integration.service.js → TypeScript (Google Sheets integration)
+- Extract actionQueue.service.js → TypeScript (Combat action queue)
+- Update all composables to use new TypeScript services directly
+
+**Next Up:** Complete remaining week 3 support services and update composables.
