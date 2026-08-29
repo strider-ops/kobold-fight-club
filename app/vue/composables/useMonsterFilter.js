@@ -3,7 +3,6 @@ import { library } from '@/services/library';
 
 /**
  * Composable for filtering and sorting monsters
- * Implements the same logic as the AngularJS monstersFilter
  */
 export function useMonsterFilter(monsters, filters) {
   // Regex cache to avoid recreating regex objects on every filter
