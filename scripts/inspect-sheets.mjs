@@ -2,7 +2,7 @@
 /**
  * Phase 0/1 — Inspect the recovered Google Sheets CSV exports.
  *
- * Validates the three Monsters-tab exports in google-sheets/ against the field rules
+ * Validates the three Monsters-tab exports in source-data/ against the field rules
  * the app actually enforces (monsterfactory.js, monsters.service.js, README.md),
  * and reports what still needs a decision before a database can be built.
  *
@@ -16,7 +16,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const DIR = path.join(root, "google-sheets");
+const DIR = path.join(root, "source-data");
 
 const FILES = [
 	{ file: "data.csv",   sources: "sources.csv",   sheet: "Official",    id: "1I5W-x8QOcP2siGCPIhWWzKGWt4vyBivYLbmkv_G1B24" },

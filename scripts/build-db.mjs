@@ -4,8 +4,8 @@
  *
  * Inputs   data/reconciled/monsters.json   3,370 monsters
  *          data/reconciled/sources.json       32 sources
- *          app/meta/crInfo.js                 CR -> XP table (read, not duplicated)
- *          app/meta/alignments.js             alignment flag bitmasks (ditto)
+ *          scripts/meta/crInfo.js             CR -> XP table (read, not duplicated)
+ *          scripts/meta/alignments.js         alignment flag bitmasks (ditto)
  *
  * Output   data/monsters.db
  *
@@ -25,8 +25,8 @@ import { DatabaseSync } from "node:sqlite";
 import {
 	alignmentFlags, sizeSort, intOrNull, textIfNotNumeric, crLabel, kebab, splitList,
 } from "./lib/transform.mjs";
-import { crInfo } from "../app/meta/crInfo.js";
-import { alignments } from "../app/meta/alignments.js";
+import { crInfo } from "./meta/crInfo.js";
+import { alignments } from "./meta/alignments.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(root, "data/monsters.db");
@@ -44,8 +44,8 @@ log("PHASE 2 — DATABASE BUILD");
 log("═".repeat(72));
 log(`  monsters in      : ${monsters.length}`);
 log(`  sources in       : ${sources.length}`);
-log(`  CR rows          : ${Object.keys(crInfo).length}  (from app/meta/crInfo.js)`);
-log(`  alignments       : ${Object.keys(alignments).length}  (from app/meta/alignments.js)`);
+log(`  CR rows          : ${Object.keys(crInfo).length}  (from scripts/meta/crInfo.js)`);
+log(`  alignments       : ${Object.keys(alignments).length}  (from scripts/meta/alignments.js)`);
 
 // ── Ported from monsterfactory.js (see scripts/lib/transform.mjs) ───────────
 

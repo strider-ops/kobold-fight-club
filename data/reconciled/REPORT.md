@@ -72,7 +72,7 @@ sibling printing and is withheld — those monsters get no stat block rather tha
 
 ## Corrections applied to the sheet data
 
-From `data/corrections.json`. The CSVs under `google-sheets/` are left verbatim.
+From `data/corrections.json`. The CSVs under `source-data/` are left verbatim.
 
 **Guardian Naga and Spirit Naga have their ac, hp and init values transposed with each other in the Official sheet.**
 

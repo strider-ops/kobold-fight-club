@@ -2,8 +2,8 @@
 /**
  * Phase 1 — Reconcile the two datasets into one intermediate JSON.
  *
- * Inputs   google-sheets/data*.csv      3,330 monsters (fid, guid, environment, ...)
- *          google-sheets/sources*.csv      31 source definitions
+ * Inputs   source-data/data*.csv      3,330 monsters (fid, guid, environment, ...)
+ *          source-data/sources*.csv      31 source definitions
  *          data/raw/embedded-monsters.json 904 monsters with full stat blocks
  *
  * Outputs  data/reconciled/monsters.json   the union, one record per printing
@@ -81,7 +81,7 @@ const declaredSources = [];
 const seenSourceName = new Map();
 
 for (const spec of SHEETS) {
-	const file = path.join(root, "google-sheets", spec.sources);
+	const file = path.join(root, "source-data", spec.sources);
 	if (!fs.existsSync(file)) { fail.push(`missing ${spec.sources}`); continue; }
 	for (const r of toObjects(parseCsv(fs.readFileSync(file, "utf8")))) {
 		if (!r.name) continue;
@@ -94,7 +94,7 @@ for (const spec of SHEETS) {
 
 const sheetRows = [];
 for (const spec of SHEETS) {
-	const file = path.join(root, "google-sheets", spec.file);
+	const file = path.join(root, "source-data", spec.file);
 	if (!fs.existsSync(file)) { fail.push(`missing ${spec.file}`); continue; }
 	for (const r of toObjects(parseCsv(fs.readFileSync(file, "utf8")))) {
 		if (!r.name) continue;
@@ -105,8 +105,8 @@ for (const spec of SHEETS) {
 const embedded = JSON.parse(
 	fs.readFileSync(path.join(root, "data/raw/embedded-monsters.json"), "utf8"));
 
-// ── Apply known corrections to the sheet data ───────────────────────────────
-// The CSVs under google-sheets/ are a verbatim record of what Google returned and are
+// ── Apply known corrections to the source data ──────────────────────────────
+// The CSVs under source-data/ are the original exported data and are
 // never edited. Known errors in them are corrected here instead, from an auditable file.
 // Each change asserts the value it expects to replace, so if a re-export fixes one of
 // these upstream the build fails rather than silently reverting the correction.
@@ -420,7 +420,7 @@ const md = [
 	"",
 	"## Corrections applied to the sheet data",
 	"",
-	"From `data/corrections.json`. The CSVs under `google-sheets/` are left verbatim.",
+	"From `data/corrections.json`. The CSVs under `source-data/` are left verbatim.",
 	"",
 	...corrections.flatMap((c) => [
 		`**${c.issue}**`,

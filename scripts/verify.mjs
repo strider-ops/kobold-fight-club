@@ -8,7 +8,7 @@
  * pre-migration app and compare field by field. That is not possible — the app's data
  * pipeline has been dead since the Sheets v3 shutdown, so there is no pre-migration
  * output left to capture. This does the equivalent against the real golden source: the
- * recovered CSVs in google-sheets/, which is what the app was serving before it broke.
+ * recovered CSVs in source-data/, which is what the app was serving before it broke.
  *
  * Every deviation must be one the migration deliberately introduced. Anything else is a
  * bug, and exits non-zero.
@@ -37,7 +37,7 @@ function check(label, ok, detail) {
 
 const sheetRows = [];
 for (const file of ["data.csv", "data-2.csv", "data-3.csv"]) {
-	const full = path.join(root, "google-sheets", file);
+	const full = path.join(root, "source-data", file);
 	for (const row of toObjects(parseCsv(fs.readFileSync(full, "utf8")))) {
 		if (row.name) sheetRows.push(row);
 	}
