@@ -77,7 +77,7 @@ interface AlignmentDefinition {
   regex: RegExp;
 }
 
-const ALIGNMENTS: Record<string, AlignmentDefinition> = {
+export const ALIGNMENTS: Record<string, AlignmentDefinition> = {
   any:          { text: 'any',           flags: LG | NG | CG | LN | N | CN | LE | NE | CE, regex: /any/i },
   any_chaotic:  { text: 'any chaotic',   flags: CG | CN | CE, regex: /any[- ]?chaotic/i },
   any_evil:     { text: 'any evil',      flags: LE | NE | CE, regex: /any[- ]?evil/i },
