@@ -27,9 +27,14 @@ describe('DatabaseService', () => {
       close: vi.fn(),
     } as any;
 
-    // Create mock SQL constructor
+    // Create mock SQL constructor (vitest 4.x requires proper class mock)
+    // Return the same mockDatabase instance to maintain singleton behavior
+    const DatabaseConstructor = function(this: any) {
+      return mockDatabase;
+    } as any;
+
     mockSQL = {
-      Database: vi.fn().mockReturnValue(mockDatabase),
+      Database: DatabaseConstructor,
     } as any;
 
     // Mock window.initSqlJs
