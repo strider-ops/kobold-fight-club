@@ -1,15 +1,15 @@
 {
   "name": "5e-monsters",
   "version": "2.0.0",
-  "description": "Kobold Fight Club - D&D 5e Encounter Builder and Battle Tracker",
+  "description": "Kobold Fight Club v2 - D&D 5e Encounter Builder and Battle Tracker",
   "main": "app/vue/index.html",
   "type": "module",
   "dependencies": {
-    "@vitejs/plugin-vue": "^6.0.8",
-    "esbuild": "^0.28.2",
-    "vite": "^8.2.2",
-    "vue": "^3.5.42",
-    "vue-router": "^4.6.4"
+    "@vitejs/plugin-vue": "6.0.8",
+    "esbuild": "0.28.2",
+    "vite": "8.2.2",
+    "vue": "3.5.41",
+    "vue-router": "4.6.4"
   },
   "devDependencies": {
     "@types/node": "^26.4.0",
@@ -40,14 +40,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jbarzilai/5e-monsters.git"
+    "url": "git+  https://github.com/strider-ops/kobold-fight-club.git"
   },
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/jbarzilai/5e-monsters/issues"
-  },
-  "homepage": "https://github.com/jbarzilai/5e-monsters#readme",
+  "author": "tistrider",
   "allowScripts": {
     "@parcel/watcher@2.6.0": true,
     "fsevents@2.3.3": true,
