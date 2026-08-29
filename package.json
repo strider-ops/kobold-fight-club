@@ -37,7 +37,7 @@
     "data": "npm run reconcile && npm run build-db && npm run verify",
     "test-scripts": "node --test \"scripts/lib/*.test.mjs\"",
     "check": "npm run test-scripts && npm run test && npm run verify",
-    "watch-css": "sass --watch src/styles/style.scss:styles/style.css"
+    "watch-css": "sass --watch src/styles/style.scss:public/styles/style.css"
   },
   "repository": {
     "type": "git",

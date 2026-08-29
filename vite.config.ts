@@ -9,7 +9,7 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     }
   },
-  publicDir: false,  // Static assets (data/, styles/, vendor/) served from root
+  publicDir: 'public',  // Static assets served from public/ directory
   server: {
     port: 8080,
     // Cache-busting headers for development (prevents Safari caching issues)
@@ -20,7 +20,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: 'dist-vue',
+    outDir: 'dist',
     emptyOutDir: true,
     sourcemap: true,
     rollupOptions: {
