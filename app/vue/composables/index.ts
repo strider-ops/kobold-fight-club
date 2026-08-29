@@ -14,4 +14,4 @@ export { useHomebrew } from './useHomebrew';
 export { useSources } from './useSources';
 export { useMetaInfo } from './useMetaInfo';
 export { useFilters } from './useFilters';
-// Note: useMonsterFilter is still in JavaScript - will be migrated later
+export { useMonsterFilter } from './useMonsterFilter.js'; // Still in JS - exported for compatibility

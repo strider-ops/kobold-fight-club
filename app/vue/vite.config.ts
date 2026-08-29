@@ -14,7 +14,7 @@ export default defineConfig({
     }
   },
   root: __dirname,  // Points to app/vue/ - Vue files resolve correctly
-  publicDir: path.resolve(__dirname, '../../'),  // Serve static files from project root (data/, vendor/, styles/)
+  publicDir: false,  // Don't copy public dir - we serve from project root in dev mode
   server: {
     port: 5173,
     fs: {
