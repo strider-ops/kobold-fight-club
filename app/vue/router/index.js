@@ -10,6 +10,10 @@ import BattleTracker from '../components/BattleTracker.vue';
 const routes = [
   {
     path: '/',
+    redirect: '/encounter-builder'
+  },
+  {
+    path: '/home',
     name: 'Home',
     component: Home
   },
@@ -46,7 +50,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory('/vue/'),
+  history: createWebHistory('/'),
   routes
 });
 

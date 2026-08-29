@@ -9,4 +9,5 @@ npm-debug.log*
 temp
 *.npmrc
 .*
-build/
+build/tmp/
+tmp/

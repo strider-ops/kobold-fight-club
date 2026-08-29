@@ -134,6 +134,8 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { useEncounter, usePartyInfo, usePlayers } from '../composables';
+import { integration } from '@/services/integration';
 
 const props = defineProps({
   filters: {
@@ -142,29 +144,34 @@ const props = defineProps({
   },
 });
 
-const encounter = computed(() => window.encounterService);
-const partyInfo = computed(() => window.partyInfoService);
-const integration = computed(() => window.integrationService);
+const {
+  groups,
+  quantity,
+  totalExp,
+  adjustedExp,
+  difficulty,
+  reference,
+  type,
+  resetEncounter,
+  add,
+  remove,
+  generateRandom: generateRandomEncounter,
+  randomize: randomizeMonsterInEncounter,
+} = useEncounter();
+const { totalPlayerCount } = usePartyInfo();
+const { selectedParty } = usePlayers();
 
 const showRandomDropdown = ref(false);
 const totalMonsters = ref(10);
 const lastDifficulty = ref('medium');
 
-const isPool = computed(() => encounter.value?.type === 'pool');
-const encounterQty = computed(() => encounter.value?.qty || 0);
-const difficulty = computed(() => encounter.value?.difficulty || '');
-const exp = computed(() => encounter.value?.exp || 0);
-const adjustedExp = computed(() => encounter.value?.adjustedExp || 0);
-const reference = computed(() => encounter.value?.reference);
-const totalPlayerCount = computed(() => partyInfo.value?.totalPlayerCount || 0);
+const isPool = computed(() => type.value === 'pool');
+const encounterQty = computed(() => quantity.value);
+const exp = computed(() => totalExp.value);
 
 const sortedGroups = computed(() => {
-  if (!encounter.value?.groups) {
-    return [];
-  }
-
   // Convert groups object to array and sort by monster name
-  return Object.values(encounter.value.groups).sort((a, b) =>
+  return Object.values(groups.value).sort((a, b) =>
     a.monster.name.localeCompare(b.monster.name)
   );
 });
@@ -175,41 +182,29 @@ const randomButtonText = computed(() => {
 
 const generateRandom = (difficulty) => {
   difficulty = difficulty || lastDifficulty.value;
-  if (encounter.value?.generateRandom) {
-    encounter.value.generateRandom(props.filters, difficulty, totalMonsters.value);
-    lastDifficulty.value = difficulty;
-    showRandomDropdown.value = false;
-  }
+  generateRandomEncounter(props.filters, difficulty, totalMonsters.value);
+  lastDifficulty.value = difficulty;
+  showRandomDropdown.value = false;
 };
 
 const newEncounter = () => {
-  if (encounter.value?.reset) {
-    encounter.value.reset();
-  }
+  resetEncounter();
 };
 
 const addMonster = (monster) => {
-  if (encounter.value?.add) {
-    encounter.value.add(monster);
-  }
+  add(monster);
 };
 
 const removeMonster = (monster) => {
-  if (encounter.value?.remove) {
-    encounter.value.remove(monster);
-  }
+  remove(monster);
 };
 
 const randomizeMonster = (monster) => {
-  if (encounter.value?.randomize) {
-    encounter.value.randomize(monster, props.filters);
-  }
+  randomizeMonsterInEncounter(monster, props.filters);
 };
 
 const launchImpInit = () => {
-  if (integration.value?.launchImpInit) {
-    integration.value.launchImpInit();
-  }
+  integration.launchImpInit(groups.value, selectedParty.value || []);
 };
 </script>
 

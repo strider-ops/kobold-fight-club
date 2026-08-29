@@ -9,6 +9,7 @@ export { useEncounter } from './useEncounter';
 export { useMonsters } from './useMonsters';
 export { useLibrary } from './useLibrary';
 export { usePlayers } from './usePlayers';
+export { usePartyInfo } from './usePartyInfo';
 export { useCombat } from './useCombat';
 export { useHomebrew } from './useHomebrew';
 export { useSources } from './useSources';

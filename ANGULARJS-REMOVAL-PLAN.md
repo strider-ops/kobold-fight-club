@@ -2,7 +2,7 @@
 
 ## Progress Summary
 
-**Overall Progress: Week 3 Complete ✅ (70%)**
+**Overall Progress: Week 3 Complete ✅ + Bug Fixes (70%)**
 
 - ✅ Week 1: TypeScript Setup + Simple Services (10/10 complete) **DONE**
 - ✅ Week 2: Medium Services (8/8 complete) **DONE**
@@ -13,6 +13,11 @@
   - Phase 4C: Testing & Documentation (0/3)
 
 **Total: 26/37 tasks complete (70%)**
+
+**Recent Updates:**
+- 🐛 Fixed critical bugs in Vue app (monster sorting, reset filters, terrain crash)
+- ✅ Added 24 comprehensive tests for filters and sorting
+- ⚡ Added Safari cache-busting headers to Vite config
 
 ---
 

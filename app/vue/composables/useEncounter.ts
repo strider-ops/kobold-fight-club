@@ -16,10 +16,14 @@ export interface UseEncounterReturn {
   adjustedExp: ComputedRef<number>;
   difficulty: ComputedRef<string>;
   reference: WritableComputedRef<any | null>;
+  type: ComputedRef<string>;
   placeholder: ComputedRef<string>;
+  threat: ComputedRef<any>;
   resetEncounter: (storedEncounter?: any) => void;
   add: (monster: any, qty?: number) => void;
   remove: (monster: any, removeAll?: boolean) => void;
+  generateRandom: (filters: any, targetDifficulty?: string, maxMonsters?: number) => void;
+  randomize: (monster: any, filters: any) => void;
 }
 
 export function useEncounter(): UseEncounterReturn {
@@ -70,6 +74,22 @@ export function useEncounter(): UseEncounterReturn {
     encounter.remove(monster, removeAll);
   }
 
+  // Generate a random encounter
+  function generateRandom(filters: any, targetDifficulty: string = 'medium', maxMonsters?: number): void {
+    encounter.generateRandom(filters, targetDifficulty, maxMonsters);
+  }
+
+  // Randomize a specific monster in the encounter
+  function randomize(monster: any, filters: any): void {
+    encounter.randomize(monster, filters);
+  }
+
+  // Type of the currently loaded encounter ('encounter' or 'pool')
+  const type = computed(() => encounter.reference?.type || 'encounter');
+
+  // Get threat levels for party
+  const threat = computed(() => encounter.threat);
+
   return {
     groups,
     quantity,
@@ -77,9 +97,13 @@ export function useEncounter(): UseEncounterReturn {
     adjustedExp,
     difficulty,
     reference,
+    type,
     placeholder,
+    threat,
     resetEncounter,
     add,
     remove,
+    generateRandom,
+    randomize,
   };
 }

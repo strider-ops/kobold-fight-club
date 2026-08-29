@@ -7,8 +7,8 @@
 
 import type { SQLJsDatabase, SQLJsStatic, InitSqlJsConfig } from '@/types';
 
-const WASM_PATH = 'vendor/sql.js/';
-const DB_PATH = 'data/monsters.db';
+const WASM_PATH = '/vendor/sql.js/';
+const DB_PATH = '/data/monsters.db';
 
 class DatabaseService {
   private ready: Promise<SQLJsDatabase> | null = null;

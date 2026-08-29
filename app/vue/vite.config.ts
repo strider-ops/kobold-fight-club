@@ -14,11 +14,17 @@ export default defineConfig({
     }
   },
   root: __dirname,  // Points to app/vue/ - Vue files resolve correctly
-  publicDir: false,  // Don't copy public dir - we serve from project root in dev mode
+  publicDir: 'public',  // Serve static assets via symlinks in public/
   server: {
-    port: 5173,
+    port: 8080,
     fs: {
       allow: ['../..'],  // Allow Vite to access files outside app/vue/
+    },
+    // Cache-busting headers for development (prevents Safari caching issues)
+    headers: {
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
     },
     // Removed proxy - we serve static assets directly from project root
   },

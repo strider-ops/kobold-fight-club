@@ -397,6 +397,146 @@ onMounted(async () => {
 
 ---
 
+## Phase 4F: Bug Fixes & Testing Improvements (COMPLETED ✅)
+
+**Date:** 2026-08-29
+
+After completing the standalone migration, several critical bugs were discovered and fixed during user testing:
+
+### Critical Bugs Fixed
+
+#### 1. Monster Sorting Bug
+**Issue:** Monster table was not sorted alphabetically by name despite code comments claiming default sort.
+
+**Root Cause:** `useMonsterFilter.js:159` had comment "Default is already sorted by name" but no actual sorting code.
+
+**Fix:** Added alphabetical sort using `localeCompare()`:
+```javascript
+else {
+  // Default: sort by name alphabetically
+  sorted.sort((a, b) => a.name.localeCompare(b.name));
+}
+```
+
+**Files affected:** `app/vue/composables/useMonsterFilter.js:159`
+
+---
+
+#### 2. Reset Filters Button Not Working
+**Issue:** Clicking "Reset Filters" button didn't reset any dropdowns (terrain, page size, etc.).
+
+**Root Cause:** `useFilters.ts` created a new reactive object on each call, so `resetFilters()` was resetting a different object than what components were displaying.
+
+**Fix:** Converted to singleton pattern with shared filters object:
+```typescript
+// Singleton: shared filters object across all components
+let sharedFilters: UnwrapNestedRefs<SearchFilters> | null = null;
+
+export function useFilters(): UseFiltersReturn {
+  // Return existing filters if already created (singleton pattern)
+  if (sharedFilters) {
+    return { filters: sharedFilters, resetFilters, loadFilters };
+  }
+  // Create filters only once...
+}
+```
+
+**Files affected:** `app/vue/composables/useFilters.ts`
+
+---
+
+#### 3. Terrain Filter Crash
+**Issue:** Selecting a terrain/environment filter caused application crash with `TypeError: Cannot read properties of undefined (reading 'indexOf')`.
+
+**Root Cause:** `useMonsterFilter.js:70` tried to access `monster.environments.indexOf()` but:
+1. Property is `environment` (singular), not `environments`
+2. Some monsters have `undefined` environment field
+
+**Fix:** Added defensive null check:
+```javascript
+// Environment filter (terrain)
+if (filters.environment) {
+  if (!monster.environment || monster.environment.indexOf(filters.environment) === -1) {
+    return true;
+  }
+}
+```
+
+**Files affected:** `app/vue/composables/useMonsterFilter.js:70-74`
+
+---
+
+#### 4. Safari Browser Caching Issue
+**Issue:** Safari aggressively cached JavaScript files, preventing updated code from loading unless in private browsing mode.
+
+**Fix:** Added cache-busting headers to Vite dev server configuration:
+```typescript
+server: {
+  port: 8080,
+  headers: {
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0',
+  },
+}
+```
+
+**Files affected:** `app/vue/vite.config.ts:24-28`
+
+---
+
+### Comprehensive Test Coverage Added
+
+Added **24 comprehensive tests** using Vitest to prevent future regressions:
+
+#### `useFilters.test.ts` (7 tests)
+- Singleton pattern verification
+- Filter reset functionality for ALL dropdowns (terrain, page size, etc.)
+- localStorage persistence
+- Source filter initialization
+
+#### `useMonsterFilter.test.ts` (12 tests)
+- All 5 sort modes: name, CR, size, type, alignment
+- Environment filter edge cases (undefined environments)
+- Search functionality (plain text and regex)
+- Filter combinations
+- Regression tests for terrain crash bug
+
+#### `SearchForm.spec.ts` (5 tests)
+- Component rendering verification
+- All 9+ dropdown bindings
+- Reset button functionality
+
+**Test Results:**
+```
+✓ app/vue/composables/__tests__/useFilters.test.ts (7)
+✓ app/vue/composables/__tests__/useMonsterFilter.test.ts (12)
+✓ app/vue/components/__tests__/SearchForm.spec.ts (5)
+
+Test Files  3 passed (3)
+Tests  24 passed (24)
+```
+
+**Files added:**
+- `app/vue/composables/__tests__/useFilters.test.ts`
+- `app/vue/composables/__tests__/useMonsterFilter.test.ts`
+- `app/vue/components/__tests__/SearchForm.spec.ts`
+
+---
+
+### Summary
+
+**Status:** All bugs fixed ✅ | All tests passing ✅ | No console errors ✅
+
+The Vue app is now fully functional with:
+- Correct alphabetical sorting
+- Working reset filters button (all dropdowns reset)
+- Safe environment/terrain filtering
+- Safari cache-busting for instant updates
+- Comprehensive test coverage preventing regressions
+
+---
+
 ## Timeline Estimate
 
 - **Phase 4A** (Tasks 1-9): 1-2 days (composable rewiring)

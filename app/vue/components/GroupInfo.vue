@@ -12,8 +12,9 @@
           <input
             class="form-control input-sm"
             type="number"
-            v-model.number="partyLevel.count"
+            v-model.number="partyLevel.playerCount"
             min="0"
+            @change="savePartyLevels"
           >
         </div>
         <div class="col-xs-4">
@@ -21,7 +22,8 @@
           <input
             class="form-control input-sm"
             type="number"
-            v-model.number="partyLevel.level"
+            :value="partyLevel.level.level"
+            @change="setLevel(index, $event.target.valueAsNumber)"
             min="1"
             max="20"
           >
@@ -81,33 +83,19 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { useEncounter, usePartyInfo } from '../composables';
 
-const partyInfo = computed(() => window.partyInfoService);
+const { difficulty } = useEncounter();
+const {
+  partyLevels,
+  totalPartyExpLevels: totalExpLevels,
+  addPartyLevel,
+  removePartyLevel,
+  setPartyLevel,
+  freeze: savePartyLevels,
+} = usePartyInfo();
 
-const partyLevels = computed(() => partyInfo.value?.partyLevels || []);
-const difficulty = computed(() => {
-  const encounter = window.encounterService;
-  return encounter?.difficulty || '';
-});
-
-const totalExpLevels = computed(() => partyInfo.value?.totalPartyExpLevels || {
-  easy: 0,
-  medium: 0,
-  hard: 0,
-  deadly: 0,
-  budget: 0,
-});
-
-const addPartyLevel = () => {
-  if (partyInfo.value?.addPartyLevel) {
-    partyInfo.value.addPartyLevel();
-  }
-};
-
-const removePartyLevel = (index) => {
-  if (partyInfo.value?.removePartyLevel) {
-    partyInfo.value.removePartyLevel(index);
-  }
+const setLevel = (index, level) => {
+  setPartyLevel(index, level);
 };
 </script>

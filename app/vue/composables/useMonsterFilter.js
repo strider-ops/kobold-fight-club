@@ -1,4 +1,5 @@
 import { computed } from 'vue';
+import { library } from '@/services/library';
 
 /**
  * Composable for filtering and sorting monsters
@@ -65,19 +66,18 @@ export function useMonsterFilter(monsters, filters) {
       return true;
     }
 
-    // Environment filter
-    if (filters.environment && monster.environments.indexOf(filters.environment) === -1) {
-      return true;
+    // Environment filter (terrain)
+    if (filters.environment) {
+      if (!monster.environment || monster.environment.indexOf(filters.environment) === -1) {
+        return true;
+      }
     }
 
     // Pool (table) filter - check if in saved pool/table
     if (filters.pool) {
-      const libraryService = window.libraryService;
-      if (libraryService) {
-        const pools = libraryService.encounters.filter(e => e.type === 'pool' && e.name === filters.pool);
-        if (pools.length > 0 && !pools[0].groups[monster.id]) {
-          return true;
-        }
+      const pools = library.encounters.filter(e => e.type === 'pool' && e.name === filters.pool);
+      if (pools.length > 0 && !pools[0].groups[monster.id]) {
+        return true;
       }
     }
 
@@ -155,8 +155,10 @@ export function useMonsterFilter(monsters, filters) {
       });
     } else if (sortBy === 'cr') {
       sorted.sort((a, b) => a.cr.numeric - b.cr.numeric);
+    } else {
+      // Default: sort by name alphabetically
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
     }
-    // Default is already sorted by name
 
     return sorted;
   };

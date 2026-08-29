@@ -3,6 +3,8 @@
  *
  * Manages search and filter state, persists to localStorage.
  * Migrated from window.storeService bridge to direct TypeScript service import.
+ *
+ * Uses singleton pattern to ensure all components share the same filters object.
  */
 
 import { reactive, watch, type UnwrapNestedRefs } from 'vue';
@@ -11,14 +13,14 @@ import { useSources } from './useSources';
 
 export interface SearchFilters {
   search: string;
-  size: string | null;
-  type: string | null;
-  alignment: string | null;
-  minCr: string | null;
-  maxCr: string | null;
-  environment: string | null;
-  legendary: string | null;
-  pool: string | null;
+  size: string;
+  type: string;
+  alignment: string;
+  minCr: string;
+  maxCr: string;
+  environment: string;
+  legendary: string;
+  pool: string;
   sort: string;
   source: Record<string, boolean>;
   pageSize: number;
@@ -30,37 +32,58 @@ export interface UseFiltersReturn {
   loadFilters: () => Promise<void>;
 }
 
+// Singleton: shared filters object across all components
+let sharedFilters: UnwrapNestedRefs<SearchFilters> | null = null;
+let watchInitialized = false;
+
 export function useFilters(): UseFiltersReturn {
   const { filters: sourceFilters } = useSources();
 
+  // Return existing filters if already created (singleton pattern)
+  if (sharedFilters) {
+    return {
+      filters: sharedFilters,
+      resetFilters,
+      loadFilters,
+    };
+  }
+
+  // Create filters only once
   const filters = reactive<SearchFilters>({
     search: '',
-    size: null,
-    type: null,
-    alignment: null,
-    minCr: null,
-    maxCr: null,
-    environment: null,
-    legendary: null,
-    pool: null,
+    size: '',
+    type: '',
+    alignment: '',
+    minCr: '',
+    maxCr: '',
+    environment: '',
+    legendary: '',
+    pool: '',
     sort: 'name',
     source: {},
     pageSize: 10,
   });
 
+  sharedFilters = filters;
+
   /**
    * Reset all filters to default values
    */
   function resetFilters(): void {
-    filters.search = '';
-    filters.size = null;
-    filters.type = null;
-    filters.alignment = null;
-    filters.minCr = null;
-    filters.maxCr = null;
-    filters.environment = null;
-    filters.legendary = null;
-    filters.pool = null;
+    if (!sharedFilters) return;
+
+    console.log('🔄 Resetting filters...');
+    sharedFilters.search = '';
+    sharedFilters.size = '';
+    sharedFilters.type = '';
+    sharedFilters.alignment = '';
+    sharedFilters.minCr = '';
+    sharedFilters.maxCr = '';
+    sharedFilters.environment = '';  // Terrain dropdown
+    sharedFilters.legendary = '';
+    sharedFilters.pool = '';
+    sharedFilters.pageSize = 10;  // Reset to default (10 items per page)
+    console.log('✅ Filters reset:', { ...sharedFilters });
     // Don't reset sort or source filters
   }
 
@@ -68,18 +91,20 @@ export function useFilters(): UseFiltersReturn {
    * Load filters from localStorage
    */
   async function loadFilters(): Promise<void> {
+    if (!sharedFilters) return;
+
     try {
       const frozen = await store.get<SearchFilters>('5em-filters');
       if (frozen) {
-        Object.assign(filters, frozen);
+        Object.assign(sharedFilters, frozen);
       } else {
         // Initialize source filters from sources service
-        filters.source = { ...sourceFilters.value };
+        sharedFilters.source = { ...sourceFilters.value };
       }
     } catch (error) {
       console.error('Failed to load filters from localStorage', error);
       // Initialize source filters from sources service as fallback
-      filters.source = { ...sourceFilters.value };
+      sharedFilters.source = { ...sourceFilters.value };
     }
   }
 
@@ -87,11 +112,16 @@ export function useFilters(): UseFiltersReturn {
    * Save filters to localStorage whenever they change
    */
   function saveFilters(): void {
-    store.set('5em-filters', filters);
+    if (sharedFilters) {
+      store.set('5em-filters', sharedFilters);
+    }
   }
 
-  // Watch for filter changes and save to localStorage
-  watch(filters, saveFilters, { deep: true });
+  // Watch for filter changes and save to localStorage (only set up once)
+  if (!watchInitialized) {
+    watch(filters, saveFilters, { deep: true });
+    watchInitialized = true;
+  }
 
   return {
     filters,

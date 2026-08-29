@@ -46,26 +46,22 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useFilters } from '../composables';
+import { useFilters, useEncounter } from '../composables';
 import SearchForm from './SearchForm.vue';
 import MonsterTable from './MonsterTable.vue';
 import CurrentEncounter from './CurrentEncounter.vue';
 import GroupInfo from './GroupInfo.vue';
 
 const { filters, loadFilters } = useFilters();
+const { groups, totalExp, difficulty } = useEncounter();
 
 const encounterShown = ref(false);
 
-const encounter = computed(() => window.encounterService);
-const encounterExp = computed(() => encounter.value?.exp || 0);
-const encounterDifficulty = computed(() => encounter.value?.difficulty || '');
+const encounterExp = computed(() => totalExp.value);
+const encounterDifficulty = computed(() => difficulty.value);
 
 const monsterQtyString = computed(() => {
-  if (!encounter.value || !encounter.value.groups) {
-    return '0 enemies';
-  }
-
-  const qty = Object.values(encounter.value.groups).reduce((sum, group) => {
+  const qty = Object.values(groups.value).reduce((sum, group) => {
     return sum + (group.qty || 0);
   }, 0);
 

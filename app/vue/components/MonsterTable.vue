@@ -158,7 +158,7 @@ const props = defineProps({
 
 const { all: allMonsters } = useMonsters();
 const { shortNames } = useSources();
-const encounter = computed(() => window.encounterService);
+const { add: addToEncounter, threat } = useEncounter();
 
 const { filteredMonsters, hiddenCount } = useMonsterFilter(allMonsters, props.filters);
 
@@ -208,24 +208,24 @@ watch(() => [props.filters.search, props.filters.type, props.filters.size, props
  * Calculate danger zone for a monster based on party threat levels
  */
 const getDangerZone = (monster) => {
-  if (!monster || !encounter.value) {
+  if (!monster || !threat.value) {
     return null;
   }
 
-  const threat = encounter.value.threat;
+  const threatLevels = threat.value;
   const monsterExp = monster.cr.exp;
 
-  if (monsterExp > threat.deadly) {
+  if (monsterExp > threatLevels.deadly) {
     return 'deadly';
-  } else if (monsterExp > threat.hard) {
+  } else if (monsterExp > threatLevels.hard) {
     return 'hard';
-  } else if (monsterExp > threat.medium) {
+  } else if (monsterExp > threatLevels.medium) {
     return 'medium';
-  } else if (monsterExp > threat.easy) {
+  } else if (monsterExp > threatLevels.easy) {
     return 'easy';
-  } else if (monsterExp > threat.pair) {
+  } else if (monsterExp > threatLevels.pair) {
     return 'pair';
-  } else if (monsterExp > threat.group) {
+  } else if (monsterExp > threatLevels.group) {
     return 'group';
   } else {
     return 'trivial';
@@ -236,9 +236,7 @@ const getDangerZone = (monster) => {
  * Add a monster to the current encounter
  */
 const addMonsterToEncounter = (monster) => {
-  if (encounter.value && encounter.value.add) {
-    encounter.value.add(monster);
-  }
+  addToEncounter(monster);
 };
 </script>
 

@@ -37,15 +37,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCombat } from '../composables/useCombat';
+import { useEncounter, usePlayers } from '../composables';
+import { integration } from '@/services/integration';
 import CombatantSetup from './CombatantSetup.vue';
 
 const router = useRouter();
 const { combatants, init } = useCombat();
+const { groups } = useEncounter();
+const { selectedParty } = usePlayers();
 
-const integration = computed(() => window.integrationService);
 const needsPlayers = ref(false);
 const needsMonsters = ref(false);
 
@@ -65,9 +68,7 @@ const startBattle = () => {
 };
 
 const launchImpInit = () => {
-  if (integration.value?.launchImpInit) {
-    integration.value.launchImpInit();
-  }
+  integration.launchImpInit(groups.value, selectedParty.value || []);
 };
 </script>
 
