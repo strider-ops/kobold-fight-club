@@ -53,7 +53,7 @@ describe('DatabaseService', () => {
       expect(window.initSqlJs).toHaveBeenCalledWith({
         locateFile: expect.any(Function),
       });
-      expect(fetch).toHaveBeenCalledWith('data/monsters.db');
+      expect(fetch).toHaveBeenCalledWith('/data/monsters.db');
     });
 
     it('should return same database instance on subsequent calls', async () => {
@@ -78,7 +78,7 @@ describe('DatabaseService', () => {
         statusText: 'Not Found',
       } as any);
 
-      await expect(db.open()).rejects.toThrow('Could not fetch data/monsters.db (404 Not Found)');
+      await expect(db.open()).rejects.toThrow('Could not fetch /data/monsters.db (404 Not Found)');
     });
 
     it('should not cache failed database load', async () => {
@@ -108,8 +108,8 @@ describe('DatabaseService', () => {
       const config = (window.initSqlJs as any).mock.calls[0][0];
       const locateFile = config.locateFile;
 
-      expect(locateFile('sql-wasm.wasm')).toBe('vendor/sql.js/sql-wasm.wasm');
-      expect(locateFile('worker.js')).toBe('vendor/sql.js/worker.js');
+      expect(locateFile('sql-wasm.wasm')).toBe('/vendor/sql.js/sql-wasm.wasm');
+      expect(locateFile('worker.js')).toBe('/vendor/sql.js/worker.js');
     });
   });
 
