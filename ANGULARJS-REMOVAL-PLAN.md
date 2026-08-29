@@ -2,14 +2,17 @@
 
 ## Progress Summary
 
-**Overall Progress: Week 3 Complete ✅ (74%)**
+**Overall Progress: Week 3 Complete ✅ (70%)**
 
 - ✅ Week 1: TypeScript Setup + Simple Services (10/10 complete) **DONE**
 - ✅ Week 2: Medium Services (8/8 complete) **DONE**
 - ✅ Week 3: Complex Services (8/8 complete) **DONE**
-- ⬜ Week 4: Cleanup & Testing (0/9 complete)
+- ⬜ Week 4: Cleanup & Testing (0/11 complete)
+  - Phase 4A: Configure Vue to be Standalone (0/3)
+  - Phase 4B: Remove AngularJS (0/5)
+  - Phase 4C: Testing & Documentation (0/3)
 
-**Total: 26/35 tasks complete (74%)**
+**Total: 26/37 tasks complete (70%)**
 
 ---
 
@@ -21,6 +24,36 @@ This document outlines the complete removal of AngularJS dependencies from Kobol
 **Estimated Effort:** 2-4 weeks (comprehensive testing included)
 **Risk Level:** Medium (mitigated by TypeScript + existing tests)
 **Current Status:** Week 2 COMPLETE ✅ All medium-complexity services extracted with 128 tests passing
+
+---
+
+## Critical Architecture Issue
+
+**The Vue app is NOT standalone - it depends on the AngularJS server!**
+
+### Current Setup (After Week 3)
+```
+AngularJS Server (port 8080)         Vue Dev Server (port 5173)
+├── serves static files              ├── serves Vue app
+│   ├── /data/monsters.db           │   └── proxies /data → 8080
+│   └── /vendor/sql.js/             │       └── proxies /vendor → 8080
+└── npm start                        └── npm run dev:vue
+```
+
+**Problem:** The Vue app proxies `/data` and `/vendor` to the AngularJS server. If we delete AngularJS files (Phase 4B), the AngularJS server won't start, breaking the Vue app.
+
+### Week 4 Solution
+**Phase 4A** reconfigures Vite to serve static assets directly from the project root:
+```
+Vue Standalone Server (port 5173)
+├── serves Vue app
+├── serves /data from project root
+├── serves /vendor from project root
+├── serves /styles from project root
+└── no proxy needed!
+```
+
+After Phase 4A completes, the Vue app is truly standalone and AngularJS can be safely deleted.
 
 ---
 
@@ -897,16 +930,70 @@ describe('StoreService', () => {
 - [x] Extract `actionQueue.service.js` → `services/actionQueue.ts` (23 tests)
 - [x] Extract `integration.service.js` → `services/integration.ts` (11 tests)
 
-### Week 4: Cleanup & Testing (0/9 ⬜ 0%)
+### Week 4: Cleanup & Testing (0/11 ⬜ 0%)
+
+**⚠️ SUPERSEDED BY NEW PLAN:** This Week 4 plan has been replaced by a more detailed implementation plan.
+
+**SEE:** `PHASE-4-STANDALONE-PLAN.md` for the correct implementation approach.
+
+**Issue Identified:** The original Week 4 plan was incomplete. It addressed serving static assets but missed the critical step of rewiring Vue composables from `window.angularService` to TypeScript services. The new plan corrects this.
+
+---
+
+**ORIGINAL WEEK 4 PLAN (ARCHIVED - DO NOT FOLLOW):**
+
+#### Phase 4A: Configure Vue to be Standalone (3 tasks)
+- [ ] Update `app/vue/vite.config.ts` to serve static assets from project root
+  - Remove proxy configuration
+  - Set `publicDir` to serve data/, vendor/, styles/, images/ from project root
+  - Update `root` to `app/vue/` so Vue files resolve correctly
+- [ ] Update `app/vue/index.html` to include required scripts and styles
+  - Add Bootstrap CSS/JS, jQuery, Lodash
+  - Add link to existing styles/style.css
+- [ ] Update `app/vue/App.vue` to initialize all services on mount
+  - Load monsters, library, players, partyInfo, homebrew services
+  - Show loading state while initializing
+
+**Implementation Details for Phase 4A:**
+
+```typescript
+// app/vue/vite.config.ts
+export default defineConfig({
+  plugins: [vue()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './'),
+      '@lib': path.resolve(__dirname, '../lib'),
+    }
+  },
+  root: __dirname,  // Points to app/vue/ - Vue files resolve correctly
+  publicDir: path.resolve(__dirname, '../../'),  // Project root - serves static files
+  server: {
+    port: 5173,
+    fs: {
+      allow: ['../..']  // Allow Vite to access files outside app/vue/
+    }
+    // NO PROXY - we serve static assets directly!
+  },
+  // ... rest of config
+});
+```
+
+**Testing Phase 4A:** After completing these tasks, run `npm run dev:vue`. The Vue app should work WITHOUT the AngularJS server running. If you see 404 errors for `/data/monsters.db` or `/vendor/sql.js`, Phase 4A is not complete.
+
+#### Phase 4B: Remove AngularJS (5 tasks)
 - [ ] Remove all AngularJS files (`app/services/*.js`, `app/encounter-builder/`, etc.)
 - [ ] Remove AngularJS dependencies from `package.json`
-- [ ] Update build configuration (remove AngularJS server)
+- [ ] Update npm scripts to use Vue as default
+  - `npm start` → runs Vue dev server
+  - `npm build` → builds Vue production bundle
+- [ ] Remove old AngularJS files (index.html, gulpfile.js, karma.conf.js)
 - [ ] Run `npm run type-check` - ensure no errors
-- [ ] Run full test suite (`npm run test:vue`)
+
+#### Phase 4C: Testing & Documentation (3 tasks)
+- [ ] Run full test suite (`npm run test`)
 - [ ] Manual testing of all features
-- [ ] Production build verification (`npm run build:vue`)
-- [ ] Cross-browser testing
-- [ ] Update documentation
+- [ ] Update documentation (CLAUDE.md, README.md)
 
 ---
 
@@ -963,6 +1050,18 @@ Converting to **TypeScript** instead of plain JavaScript adds:
 - Significant long-term maintainability benefits
 - Compile-time error catching
 - Better developer experience
+
+---
+
+## ⚠️ IMPORTANT: Week 4 Plan Updated
+
+**The original Week 4 plan below has been superseded.**
+
+**New Plan Location:** `PHASE-4-STANDALONE-PLAN.md`
+
+**Why the change:** Review on 2026-08-29 revealed that Vue composables still use `window.angularService` instead of TypeScript services. The new plan addresses this gap with a detailed, task-by-task approach to make Vue truly standalone.
+
+**Do not follow the Week 4 sections below.** They are kept for reference only.
 
 ---
 
