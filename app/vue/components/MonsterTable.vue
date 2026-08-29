@@ -120,8 +120,8 @@
     </div>
 
     <div class="pagination-container">
-      <nav v-if="totalPages > 1">
-        <ul class="pagination">
+      <nav v-if="totalPages > 1" style="padding-top: 0;">
+        <ul class="pagination" style="margin: 0;">
           <li :class="{ disabled: currentPage === 1 }">
             <a href="#" @click.prevent="goToPage(currentPage - 1)">
               <span>&laquo;</span>
@@ -243,17 +243,17 @@ const addMonsterToEncounter = (monster) => {
 <style scoped>
 /* Limit table height so pagination is always visible without page scrolling */
 .monster-table {
-  max-height: 62vh;
+  max-height: 70vh;
   overflow-y: auto;
   margin-bottom: 0;
 }
 
 .pagination-container {
-  margin-top: 15px;
-  margin-bottom: 20px;
+  margin-top: 0px;
+  margin-bottom: 0px;
   text-align: center;
   background-color: white;
-  padding: 10px 0;
+  padding: 0px 0;
 }
 
 .monster-table--column__sortable {

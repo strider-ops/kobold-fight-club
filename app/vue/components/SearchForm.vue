@@ -100,7 +100,7 @@
             <button type="button" class="close" @click="showSourcesModal = false">
               <span>&times;</span>
             </button>
-            <h4 class="modal-title">Set Source Material</h4>
+            <h3 class="modal-title">Set Source Material</h3>
           </div>
           <div class="modal-body">
             <div
@@ -155,7 +155,7 @@
             <button type="button" class="close" @click="showContentModal = false">
               <span>&times;</span>
             </button>
-            <h4 class="modal-title">Manage Content</h4>
+            <h3 class="modal-title">Manage Content</h3>
           </div>
           <div class="modal-body">
             <h5>Your imported content</h5>

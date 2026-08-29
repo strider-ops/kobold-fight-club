@@ -11,3 +11,4 @@ temp
 .*
 build/tmp/
 tmp/
+dist-vue/
