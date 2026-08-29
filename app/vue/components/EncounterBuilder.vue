@@ -75,8 +75,7 @@ onMounted(async () => {
 
 <style>
 /*
- * Styles are loaded from the main AngularJS app CSS (styles/style.css)
+ * Styles are loaded from the main app CSS (styles/style.css)
  * which is already compiled and includes all the encounter-builder styles.
- * The Vue app reuses these existing styles.
  */
 </style>

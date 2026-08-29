@@ -66,7 +66,7 @@ function calculateExp(storedEncounter) {
 
 function handleLoad() {
   encounter.resetEncounter(props.storedEncounter);
-  // Navigate to encounter-builder (AngularJS route)
+  // Navigate to encounter-builder
   window.location.hash = '#/encounter-builder';
 }
 

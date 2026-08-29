@@ -52,7 +52,7 @@ const { selectedParty } = usePlayers();
 const needsPlayers = ref(false);
 const needsMonsters = ref(false);
 
-// Combat constants (from AngularJS)
+// Combat constants
 const NO_PLAYERS = 1;
 const NO_MONSTERS = 2;
 
