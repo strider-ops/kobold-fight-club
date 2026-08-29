@@ -49,7 +49,6 @@ const loadError = ref<string | null>(null);
 
 /**
  * Initialize all services
- * This replaces the AngularJS serviceInitialization function
  */
 async function initializeApp(): Promise<void> {
   try {

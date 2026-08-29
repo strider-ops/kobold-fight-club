@@ -36,7 +36,6 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
 import { useEncounter } from '../composables/useEncounter';
 import { useMonsters } from '../composables/useMonsters';
 import { useRouter } from 'vue-router';

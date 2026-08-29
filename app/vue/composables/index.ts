@@ -2,7 +2,7 @@
  * Composables Index
  *
  * Exports all Vue composables for easy importing.
- * All composables now use TypeScript services directly (no window.angularService bridge).
+ * All composables now use TypeScript services directly.
  */
 
 export { useEncounter } from './useEncounter';
