@@ -202,8 +202,3 @@ class Players implements PlayersService {
 
 // Export singleton instance
 export const players = new Players();
-
-// Expose to window for AngularJS compatibility (temporary)
-if (typeof window !== 'undefined') {
-  (window as any).players = players;
-}

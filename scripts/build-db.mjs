@@ -22,10 +22,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { DatabaseSync } from "node:sqlite";
-import { loadAngularService } from "./lib/angular-meta.mjs";
 import {
 	alignmentFlags, sizeSort, intOrNull, textIfNotNumeric, crLabel, kebab, splitList,
 } from "./lib/transform.mjs";
+import { crInfo } from "../app/meta/crInfo.js";
+import { alignments } from "../app/meta/alignments.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(root, "data/monsters.db");
@@ -37,9 +38,6 @@ const monsters = JSON.parse(
 	fs.readFileSync(path.join(root, "data/reconciled/monsters.json"), "utf8"));
 const sources = JSON.parse(
 	fs.readFileSync(path.join(root, "data/reconciled/sources.json"), "utf8"));
-
-const crInfo = loadAngularService(path.join(root, "app/meta/crInfo.js"), "crInfo");
-const alignments = loadAngularService(path.join(root, "app/meta/alignments.js"), "alignments");
 
 log("═".repeat(72));
 log("PHASE 2 — DATABASE BUILD");
