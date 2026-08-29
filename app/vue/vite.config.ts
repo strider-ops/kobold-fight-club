@@ -13,23 +13,17 @@ export default defineConfig({
       '@lib': path.resolve(__dirname, '../lib'),
     }
   },
-  root: './',
-  publicDir: false,
+  root: __dirname,  // Points to app/vue/ - Vue files resolve correctly
+  publicDir: path.resolve(__dirname, '../../public'),  // For any future public assets
   server: {
     port: 5173,
-    proxy: {
-      '/data': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-      },
-      '/vendor': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-      },
-    }
+    fs: {
+      allow: ['../..'],  // Allow Vite to access files outside app/vue/
+    },
+    // Removed proxy - we serve static assets directly from project root
   },
   build: {
-    outDir: '../../dist-vue',
+    outDir: path.resolve(__dirname, '../../dist-vue'),
     emptyOutDir: true,
     sourcemap: true,
     rollupOptions: {

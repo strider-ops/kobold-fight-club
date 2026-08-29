@@ -83,6 +83,7 @@ export interface SavedEncounter {
   name: string;
   groups: EncounterGroups; // Map of monster ID to MonsterGroup
   reference?: string | null;
+  type?: 'encounter' | 'pool'; // Type of saved encounter (pool for random encounter pools)
 }
 
 // ============================================================================

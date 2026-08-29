@@ -161,7 +161,7 @@ class CombatService {
     }
 
     if (retValue) {
-      return retValue;
+      return retValue as CombatStatusType;
     }
 
     // Add players

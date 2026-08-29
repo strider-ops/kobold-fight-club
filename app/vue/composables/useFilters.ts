@@ -1,14 +1,39 @@
-import { ref, reactive, watch, onMounted } from 'vue';
+/**
+ * Filters composable for Vue
+ *
+ * Manages search and filter state, persists to localStorage.
+ * Migrated from window.storeService bridge to direct TypeScript service import.
+ */
+
+import { reactive, watch, type UnwrapNestedRefs } from 'vue';
+import { store } from '@/services/store';
 import { useSources } from './useSources';
 
-/**
- * Composable for managing search and filter state
- * Persists to localStorage using the store service
- */
-export function useFilters() {
+export interface SearchFilters {
+  search: string;
+  size: string | null;
+  type: string | null;
+  alignment: string | null;
+  minCr: string | null;
+  maxCr: string | null;
+  environment: string | null;
+  legendary: string | null;
+  pool: string | null;
+  sort: string;
+  source: Record<string, boolean>;
+  pageSize: number;
+}
+
+export interface UseFiltersReturn {
+  filters: UnwrapNestedRefs<SearchFilters>;
+  resetFilters: () => void;
+  loadFilters: () => Promise<void>;
+}
+
+export function useFilters(): UseFiltersReturn {
   const { filters: sourceFilters } = useSources();
 
-  const filters = reactive({
+  const filters = reactive<SearchFilters>({
     search: '',
     size: null,
     type: null,
@@ -26,7 +51,7 @@ export function useFilters() {
   /**
    * Reset all filters to default values
    */
-  const resetFilters = () => {
+  function resetFilters(): void {
     filters.search = '';
     filters.size = null;
     filters.type = null;
@@ -37,20 +62,14 @@ export function useFilters() {
     filters.legendary = null;
     filters.pool = null;
     // Don't reset sort or source filters
-  };
+  }
 
   /**
-   * Load filters from localStorage on mount
+   * Load filters from localStorage
    */
-  const loadFilters = async () => {
-    const storeService = window.storeService;
-    if (!storeService) {
-      console.warn('Store service not available');
-      return;
-    }
-
+  async function loadFilters(): Promise<void> {
     try {
-      const frozen = await storeService.get('5em-filters');
+      const frozen = await store.get<SearchFilters>('5em-filters');
       if (frozen) {
         Object.assign(filters, frozen);
       } else {
@@ -62,19 +81,14 @@ export function useFilters() {
       // Initialize source filters from sources service as fallback
       filters.source = { ...sourceFilters.value };
     }
-  };
+  }
 
   /**
    * Save filters to localStorage whenever they change
    */
-  const saveFilters = () => {
-    const storeService = window.storeService;
-    if (!storeService) {
-      return;
-    }
-
-    storeService.set('5em-filters', filters);
-  };
+  function saveFilters(): void {
+    store.set('5em-filters', filters);
+  }
 
   // Watch for filter changes and save to localStorage
   watch(filters, saveFilters, { deep: true });
