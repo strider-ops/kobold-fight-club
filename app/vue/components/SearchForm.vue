@@ -73,11 +73,11 @@
         </option>
       </select>
 
-      <button type="button" class="btn btn-default" @click="showSourcesModal = true">
+      <button type="button" class="btn btn-info" @click="showSourcesModal = true">
         Set Sources
       </button>
 
-      <button type="button" class="btn btn-default" @click="showContentModal = true">
+      <button type="button" class="btn btn-info" @click="showContentModal = true">
         Manage Content
       </button>
 

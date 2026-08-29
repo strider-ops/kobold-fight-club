@@ -241,9 +241,19 @@ const addMonsterToEncounter = (monster) => {
 </script>
 
 <style scoped>
+/* Limit table height so pagination is always visible without page scrolling */
+.monster-table {
+  max-height: 62vh;
+  overflow-y: auto;
+  margin-bottom: 0;
+}
+
 .pagination-container {
   margin-top: 15px;
+  margin-bottom: 20px;
   text-align: center;
+  background-color: white;
+  padding: 10px 0;
 }
 
 .monster-table--column__sortable {
