@@ -1,14 +1,6 @@
 <template>
   <div class="search">
     <div class="search--search-form form-inline">
-      <label class="sr-only">Search</label>
-      <input
-        class="form-control search-input"
-        type="text"
-        v-model="filters.search"
-        placeholder="Search..."
-      >
-
       <select class="form-control" v-model="filters.size">
         <option value="">Any Size</option>
         <option v-for="size in sizes" :key="size" :value="size">
@@ -44,6 +36,13 @@
         </option>
       </select>
 
+      <select class="form-control" v-model="filters.legendary">
+        <option value="">Any Legendary</option>
+        <option v-for="legendary in legendaryList" :key="legendary" :value="legendary">
+          {{ legendary }}
+        </option>
+      </select>
+
       <select class="form-control" v-model="filters.environment">
         <option value="">Any Terrain</option>
         <option v-for="env in environments" :key="env" :value="env">
@@ -51,10 +50,11 @@
         </option>
       </select>
 
-      <select class="form-control" v-model="filters.legendary">
-        <option value="">Any Legendary</option>
-        <option v-for="legendary in legendaryList" :key="legendary" :value="legendary">
-          {{ legendary }}
+      <button class="btn btn-danger" @click="resetFilters">Reset Filters</button>
+
+      <select class="form-control search--page-size" v-model.number="filters.pageSize">
+        <option v-for="size in [10, 25, 50, 100, 250, 500, 1000]" :key="size" :value="size">
+          {{ size }} / page
         </option>
       </select>
 
@@ -81,15 +81,13 @@
         Manage Content
       </button>
 
-      <select class="form-control search--page-size" v-model.number="filters.pageSize">
-        <option v-for="size in [10, 25, 50, 100, 250, 500, 1000]" :key="size" :value="size">
-          {{ size }} / page
-        </option>
-      </select>
-    </div>
-
-    <div class="search--reset">
-      <button class="btn btn-danger" @click="resetFilters">Reset Filters</button>
+      <label class="sr-only">Search</label>
+      <input
+        class="form-control search-input search--search-form--search-right"
+        type="text"
+        v-model="filters.search"
+        placeholder="Search..."
+      >
     </div>
 
     <!-- Sources Modal -->

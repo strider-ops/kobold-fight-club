@@ -109,6 +109,11 @@ body {
   min-height: 100vh;
 }
 
+#app > div > h1 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
 /* Loading State */
 .loading-container {
   display: flex;
