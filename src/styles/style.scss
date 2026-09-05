@@ -1,27 +1,7 @@
-@import 'global';
-@import 'mixins';
+@use 'global';
+@use 'mixins';
+@use 'variables';
 
 // Bootstrap and Font Awesome loaded from CDN (see index.html)
 
-$menu-button-height: 40px;
-$menu-button-width: 60px;
-
-$sidebar-width: 250px;
-$encounter-builder-height: 250px;
-$encounter-builder-height-closed: 0;
-$pagination-height: 70px;
-
-// Color-blind friendly palette via http://blog.mollietaylor.com/2012/10/color-blindness-and-palette-choice.html
-$combatant-player: #66C2A5; // Aqua
-$combatant-enemy: #FC8D62; // Salmon
-// #8DA0CB; // Periwinkle
-$combatant-lair: #E78AC3; // Pink
-// #A6D854; // Lime
-// #FFD92F; // Yellow
-// #E5C494; // Brown
-// #B3B3B3; // Grey
-
-// Line height for things where text should line up with buttons
-$button-line-height: 34px;
-
-@import 'common/common';
+@use 'common/common';

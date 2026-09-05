@@ -4,6 +4,22 @@
   "description": "Kobold Fight Club v2 - D&D 5e Encounter Builder and Battle Tracker",
   "main": "app/vue/index.html",
   "type": "module",
+  "scripts": {
+    "prestart": "npm install",
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "type-check": "tsc --noEmit",
+    "reconcile": "node scripts/reconcile.mjs",
+    "build-db": "node --no-warnings scripts/build-db.mjs",
+    "verify": "node --no-warnings scripts/verify.mjs",
+    "data": "npm run reconcile && npm run build-db && npm run verify",
+    "test-scripts": "node --test \"scripts/lib/*.test.mjs\"",
+    "check": "npm run test-scripts && npm run test && npm run verify"
+  },
   "dependencies": {
     "@vitejs/plugin-vue": "6.0.8",
     "@vue/server-renderer": "^3.5.42",
@@ -22,22 +38,6 @@
     "sass": "^1.103.1",
     "typescript": "^7.0.2",
     "vitest": "^4.1.11"
-  },
-  "scripts": {
-    "prestart": "npm install",
-    "start": "vite",
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "type-check": "tsc --noEmit",
-    "reconcile": "node scripts/reconcile.mjs",
-    "build-db": "node --no-warnings scripts/build-db.mjs",
-    "verify": "node --no-warnings scripts/verify.mjs",
-    "data": "npm run reconcile && npm run build-db && npm run verify",
-    "test-scripts": "node --test \"scripts/lib/*.test.mjs\"",
-    "check": "npm run test-scripts && npm run test && npm run verify"
   },
   "repository": {
     "type": "git",

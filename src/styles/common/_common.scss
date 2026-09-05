@@ -1,6 +1,7 @@
-@import 'row';
-@import 'encounter-button';
-@import 'number-input';
-@import 'launch-in-imp-init-button';
-@import 'search-form';
-@import 'group-info';
+@use 'row';
+@use 'encounter-button';
+@use 'number-input';
+@use 'launch-in-imp-init-button';
+@use 'search-form';
+@use 'group-info';
+@use 'monster-table';

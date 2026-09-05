@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 @mixin avoid-menu {
 	min-height: $menu-button-height;
 	padding-left: $menu-button-width + 10;

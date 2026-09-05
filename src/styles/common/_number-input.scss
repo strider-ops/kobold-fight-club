@@ -1,3 +1,5 @@
+@use 'encounter-button';
+
 .number-input {
 	&--button {
 		@extend .encounter-button;
