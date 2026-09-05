@@ -21,10 +21,6 @@
         <button class="btn btn-danger btn-lg" @click="startBattle">
           Fight!
         </button>
-
-        <button class="btn btn-lg launch-in-imp-init-button" @click="launchImpInit">
-          Run in Improved Initiative
-        </button>
       </div>
 
       <CombatantSetup
@@ -40,14 +36,10 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCombat } from '../composables/useCombat';
-import { useEncounter, usePlayers } from '../composables';
-import { integration } from '@/services/integration';
 import CombatantSetup from './CombatantSetup.vue';
 
 const router = useRouter();
 const { combatants, init } = useCombat();
-const { groups } = useEncounter();
-const { selectedParty } = usePlayers();
 
 const needsPlayers = ref(false);
 const needsMonsters = ref(false);
@@ -65,10 +57,6 @@ onMounted(() => {
 
 const startBattle = () => {
   router.push('/battle-tracker');
-};
-
-const launchImpInit = () => {
-  integration.launchImpInit(groups.value, selectedParty.value || []);
 };
 </script>
 

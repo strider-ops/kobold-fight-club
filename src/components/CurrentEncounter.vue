@@ -123,9 +123,6 @@
           >
             Save
           </button>
-          <button class="btn launch-in-imp-init-button" @click="launchImpInit">
-            Run in Improved Initiative
-          </button>
         </div>
       </div>
     </div>
@@ -134,8 +131,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { useEncounter, usePartyInfo, usePlayers } from '../composables';
-import { integration } from '@/services/integration';
+import { useEncounter, usePartyInfo } from '../composables';
 
 const props = defineProps({
   filters: {
@@ -159,7 +155,6 @@ const {
   randomize: randomizeMonsterInEncounter,
 } = useEncounter();
 const { totalPlayerCount } = usePartyInfo();
-const { selectedParty } = usePlayers();
 
 const showRandomDropdown = ref(false);
 const totalMonsters = ref(10);
@@ -201,10 +196,6 @@ const removeMonster = (monster) => {
 
 const randomizeMonster = (monster) => {
   randomizeMonsterInEncounter(monster, props.filters);
-};
-
-const launchImpInit = () => {
-  integration.launchImpInit(groups.value, selectedParty.value || []);
 };
 </script>
 
