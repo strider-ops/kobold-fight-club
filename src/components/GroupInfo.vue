@@ -7,7 +7,7 @@
         :key="index"
         class="group-info--party-level-row row"
       >
-        <div class="col-xs-4">
+        <div class="col-xs-5">
           <label>Player Count:</label>
           <input
             class="form-control input-sm"
@@ -28,7 +28,7 @@
             max="20"
           >
         </div>
-        <div class="col-xs-4" style="padding-top: 24px;">
+        <div class="col-xs-3" style="padding-top: 20px;">
           <button
             v-if="index > 0"
             class="btn btn-xs btn-danger"

@@ -1,6 +1,6 @@
 .group-info {
 	display: flex;
-	padding-bottom: 1rem;
+	padding-bottom: 0.5rem;
 	border-bottom: 1px solid #ddd;
 
 	&--header {
@@ -14,15 +14,24 @@
 
 		label {
 			display: block;
+			font-size: 1.1rem;
+			margin-bottom: 2px;
+			white-space: nowrap;
+		}
+
+		.form-control {
+			height: 32px;
+			padding: 4px 6px;
+			font-size: 1.1rem;
 		}
 	}
 
 	&--party-level-row {
-		margin-bottom: 0.5em;
+		margin-bottom: 0.25em;
 	}
 
 	&--add-level {
-		margin-top: 1em;
+		margin-top: 0.5em;
 
 		.fa-plus {
 			margin-right: 5px;
@@ -30,8 +39,9 @@
 	}
 
 	&--guidelines {
-		margin-top: 1rem;
+		margin-top: 0.5rem;
 		text-align: right;
+		font-size: 1.1rem;
 	}
 
 	&--guidelines-active {
