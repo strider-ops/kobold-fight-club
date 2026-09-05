@@ -92,7 +92,6 @@
               </span>
             </td>
             <td class="monster-table--source-cell">
-              <span class="monster-table--label">Source(s):</span>
               <div
                 v-for="source in monster.sources"
                 :key="source.name"
