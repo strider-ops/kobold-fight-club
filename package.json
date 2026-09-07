@@ -28,11 +28,11 @@
   },
   "devDependencies": {
     "@types/node": "26.3.0",
-    "@vue/test-utils": "^2.5.0",
+    "@vue/test-utils": "2.5.0",
     "jsdom": "30.0.1",
-    "sass": "^1.103.1",
-    "typescript": "^7.0.2",
-    "vitest": "^4.1.11"
+    "sass": "1.103.1",
+    "typescript": "7.0.2",
+    "vitest": "4.1.11"
   },
   "repository": {
     "type": "git",
