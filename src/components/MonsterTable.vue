@@ -107,7 +107,7 @@
                 <span class="monster-table--source-name monster-table--source-name__long">
                   {{ source.name }}
                 </span>
-                <span v-if="source.page">p.{{ source.page }}</span>
+                <span v-if="source.page">&nbsp;p.{{ source.page }}</span>
                 <span v-if="source.url">
                   <a target="_blank" :href="source.url">[Link]</a>
                 </span>
