@@ -28,7 +28,8 @@ export interface Alignment {
 
 export interface MonsterSource {
   name: string; // e.g., "Monster Manual", "Volo's Guide"
-  page?: string | number; // Page number or URL
+  page?: string | number; // Page number
+  url?: string; // Optional link to the source - must be validated with isHttpUrl() before use in a template
 }
 
 export interface Monster {

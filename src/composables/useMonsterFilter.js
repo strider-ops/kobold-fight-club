@@ -1,5 +1,6 @@
 import { computed } from 'vue';
 import { library } from '@/services/library';
+import { compileSafeRegex } from '@/services/monsterFactory';
 
 /**
  * Composable for filtering and sorting monsters
@@ -99,20 +100,18 @@ export function useMonsterFilter(monsters, filters) {
     // Check if this is a regex search (/pattern/)
     const regexMatch = filters.search.match(/^\/(.*?)\/?$/);
     if (regexMatch) {
-      let regex;
       const raw = regexMatch[1];
-      try {
-        regex = regexCache[raw] || new RegExp(raw, 'i');
-        if (regex) {
-          lastRegex = regex;
-          regexCache[raw] = regex;
-        }
-      } catch (ex) {
-        regexCache[raw] = null;
+      let regex = regexCache[raw];
+      if (regex === undefined) {
+        // compileSafeRegex caps pattern length and rejects known
+        // catastrophic-backtracking shapes before compiling (ReDoS guard).
+        regex = compileSafeRegex(raw, 'i');
+        regexCache[raw] = regex;
       }
-
-      regex = regex || lastRegex;
-      return monster.searchable.match(regex);
+      if (regex) {
+        lastRegex = regex;
+      }
+      return monster.searchable.match(regex || lastRegex);
     }
 
     // Plain text search

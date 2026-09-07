@@ -272,14 +272,14 @@ class EncounterService {
   async thaw(): Promise<void> {
     this.reset();
 
-    const frozen = await store.get<StoredEncounter>('5em-encounter');
-
-    if (!frozen) {
-      return;
+    try {
+      await store.get<StoredEncounter>('5em-encounter');
+      // The original implementation had a comment about restoring but didn't implement it
+      // We'll leave it as-is to match the original behavior
+    } catch (ex) {
+      // Corrupted/tampered localStorage value - don't let it block app boot.
+      console.error('Failed to load 5em-encounter from localStorage', ex);
     }
-
-    // The original implementation had a comment about restoring but didn't implement it
-    // We'll leave it as-is to match the original behavior
   }
 
   /**

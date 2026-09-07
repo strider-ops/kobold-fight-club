@@ -118,14 +118,20 @@ class PartyInfo implements PartyInfoService {
    * Load party info from localStorage
    */
   private async thaw(): Promise<void> {
-    // Try modern format first
-    if (store.hasKey(STORAGE_KEY)) {
-      const frozen = await store.get(STORAGE_KEY);
-      this.loadPartyInfoFromStore(frozen);
-    } else {
-      // Fall back to legacy format
-      const frozen = await store.get(LEGACY_KEY);
-      this.loadFromEncounterStoreAndConvert(frozen);
+    try {
+      // Try modern format first
+      if (store.hasKey(STORAGE_KEY)) {
+        const frozen = await store.get(STORAGE_KEY);
+        this.loadPartyInfoFromStore(frozen);
+      } else {
+        // Fall back to legacy format
+        const frozen = await store.get(LEGACY_KEY);
+        this.loadFromEncounterStoreAndConvert(frozen);
+      }
+    } catch (ex) {
+      // Corrupted/tampered localStorage value - don't let it block app boot,
+      // just fall back to the default state for this feature.
+      console.error(`Failed to load ${STORAGE_KEY} from localStorage`, ex);
     }
   }
 
@@ -144,6 +150,11 @@ class PartyInfo implements PartyInfoService {
 
       // Skip invalid level data
       if (!level) {
+        continue;
+      }
+
+      // Skip invalid/tampered player counts rather than propagating NaN
+      if (!Number.isFinite(frozenData?.playerCount)) {
         continue;
       }
 

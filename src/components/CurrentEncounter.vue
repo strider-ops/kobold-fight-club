@@ -65,8 +65,8 @@
                 >
                   {{ source.name }}
                   <span v-if="source.page">p.{{ source.page }}</span>
-                  <span v-if="source.url">
-                    <a target="_blank" :href="source.url">[Link]</a>
+                  <span v-if="isHttpUrl(source.url)">
+                    <a target="_blank" rel="noopener noreferrer" :href="source.url">[Link]</a>
                   </span>
                 </div>
               </div>
@@ -132,6 +132,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useEncounter, usePartyInfo } from '../composables';
+import { isHttpUrl } from '@/services/monsterFactory';
 
 const props = defineProps({
   filters: {

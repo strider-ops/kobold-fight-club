@@ -131,7 +131,7 @@
               </ul>
             </div>
             <div>
-              <a href="https://github.com/Asmor/5e-monsters/wiki/Extra-content-for-KFC" target="_blank">
+              <a href="https://github.com/Asmor/5e-monsters/wiki/Extra-content-for-KFC" target="_blank" rel="noopener noreferrer">
                 Add additional content
               </a>
             </div>

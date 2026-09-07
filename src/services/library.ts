@@ -79,9 +79,15 @@ class Library implements LibraryService {
    * Load encounters from localStorage
    */
   private async thaw(): Promise<void> {
-    const frozen = await store.get<SavedEncounter[]>(STORAGE_KEY);
-    if (frozen && Array.isArray(frozen)) {
-      state.encounters.splice(0, state.encounters.length, ...frozen);
+    try {
+      const frozen = await store.get<SavedEncounter[]>(STORAGE_KEY);
+      if (frozen && Array.isArray(frozen)) {
+        state.encounters.splice(0, state.encounters.length, ...frozen);
+      }
+    } catch (ex) {
+      // Corrupted/tampered localStorage value - don't let it block app boot,
+      // just fall back to the default (empty) state for this feature.
+      console.error(`Failed to load ${STORAGE_KEY} from localStorage`, ex);
     }
   }
 

@@ -5,6 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kobold Fight Club</title>
 
+  <!-- Content-Security-Policy: defense-in-depth backstop in case an XSS is ever
+       introduced. 'unsafe-eval' is required by the Vite/esbuild dev server (HMR
+       runtime); 'unsafe-inline' on style-src is required for Vue's :style
+       bindings and scoped-style injection. Everything else is locked to 'self'. -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-eval';
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com;
+    img-src 'self' data:;
+    connect-src 'self';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+  ">
+
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600" rel="stylesheet">
 
@@ -20,7 +37,8 @@
   <div id="vue-app"></div>
 
   <!-- Lodash - Used by various services (combat, etc.) -->
-  <script src="https://cdn.jsdelivr.net/lodash/4.16.3/lodash.min.js"></script>
+  <!-- Vendored (4.17.21) to keep app working offline and avoid CDN compromise/breakage -->
+  <script src="/vendor/lodash/lodash.min.js"></script>
 
   <!-- SQL.js - SQLite compiled to WebAssembly for loading monsters.db in browser -->
   <!-- Vendored to keep app working offline and avoid external dependency breakage -->

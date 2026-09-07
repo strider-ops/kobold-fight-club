@@ -151,8 +151,10 @@ describe('Library Service', () => {
     it('should handle invalid data in localStorage', async () => {
       localStorage.setItem('5em-library', 'invalid json');
 
-      // Should not throw
-      await expect(library.initialize()).rejects.toThrow();
+      // A corrupted value must not throw/block app boot - it should be
+      // caught internally and degrade to an empty list instead.
+      await expect(library.initialize()).resolves.not.toThrow();
+      expect(library.encounters).toHaveLength(0);
     });
   });
 

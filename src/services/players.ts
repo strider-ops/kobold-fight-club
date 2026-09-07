@@ -191,11 +191,17 @@ class Players implements PlayersService {
    * Load parties from localStorage
    */
   private async thaw(): Promise<void> {
-    const frozen = await store.get<Party[]>(STORAGE_KEY);
-    if (frozen && Array.isArray(frozen)) {
-      state.parties = frozen;
-      state.partiesDirty = false;
-      state.rawDirty = true;
+    try {
+      const frozen = await store.get<Party[]>(STORAGE_KEY);
+      if (frozen && Array.isArray(frozen)) {
+        state.parties = frozen;
+        state.partiesDirty = false;
+        state.rawDirty = true;
+      }
+    } catch (ex) {
+      // Corrupted/tampered localStorage value - don't let it block app boot,
+      // just fall back to the default (empty) state for this feature.
+      console.error(`Failed to load ${STORAGE_KEY} from localStorage`, ex);
     }
   }
 }

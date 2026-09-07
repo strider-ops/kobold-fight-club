@@ -14,6 +14,49 @@ import type {
   SearchFilters,
 } from '@/types';
 
+/**
+ * Returns true only for http:/https: URLs. Use before binding any
+ * user- or import-derived URL (e.g. MonsterSource.url) to an <a :href>,
+ * to block javascript:/data: URL injection.
+ */
+export function isHttpUrl(value: unknown): value is string {
+  if (typeof value !== 'string') return false;
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+// ============================================================================
+// Safe regex compilation (search box "/pattern/" support)
+// ============================================================================
+
+const MAX_REGEX_SOURCE_LENGTH = 200;
+// Rejects the classic catastrophic-backtracking shape: a quantified group
+// nested inside another quantifier, e.g. (a+)+, (a*)*, (a+)*, (a|b)+.
+const RISKY_REGEX_SHAPE = /\([^()]*[+*][^()]*\)[+*]/;
+
+/**
+ * Guards against ReDoS from user-typed regex search patterns: caps pattern
+ * length and rejects an obvious nested-quantifier shape before compiling.
+ * Not a full ReDoS analyzer, but blocks the common evil-regex patterns.
+ */
+export function compileSafeRegex(source: string, flags?: string): RegExp | null {
+  if (typeof source !== 'string' || source.length === 0 || source.length > MAX_REGEX_SOURCE_LENGTH) {
+    return null;
+  }
+  if (RISKY_REGEX_SHAPE.test(source)) {
+    return null;
+  }
+  try {
+    return new RegExp(source, flags);
+  } catch {
+    return null;
+  }
+}
+
 // ============================================================================
 // Challenge Rating Data (from app/meta/crInfo.js)
 // ============================================================================
@@ -356,13 +399,12 @@ class MonsterFactory {
     if (!filters.text) return true;
 
     if (filters.isRegex) {
-      try {
-        const regex = new RegExp(filters.text, 'i');
-        return regex.test(monster.searchable || '');
-      } catch (e) {
-        // Invalid regex, fall back to literal search
+      const regex = compileSafeRegex(filters.text, 'i');
+      if (!regex) {
+        // Invalid or unsafe regex, fall back to literal search
         return (monster.searchable || '').toLowerCase().includes(filters.text.toLowerCase());
       }
+      return regex.test(monster.searchable || '');
     }
 
     return (monster.searchable || '').toLowerCase().includes(filters.text.toLowerCase());
