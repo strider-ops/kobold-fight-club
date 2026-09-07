@@ -57,11 +57,11 @@ export function useMonsterFilter(monsters, filters) {
     }
 
     // CR filters
-    if (filters.minCr != null && monster.cr.numeric < filters.minCr) {
+    if (filters.minCr !== '' && filters.minCr != null && monster.cr.value < filters.minCr) {
       return true;
     }
 
-    if (filters.maxCr != null && monster.cr.numeric > filters.maxCr) {
+    if (filters.maxCr !== '' && filters.maxCr != null && monster.cr.value > filters.maxCr) {
       return true;
     }
 
@@ -153,7 +153,7 @@ export function useMonsterFilter(monsters, filters) {
         return aText > bText ? 1 : -1;
       });
     } else if (sortBy === 'cr') {
-      sorted.sort((a, b) => a.cr.numeric - b.cr.numeric);
+      sorted.sort((a, b) => a.cr.value - b.cr.value);
     } else {
       // Default: sort by name alphabetically
       sorted.sort((a, b) => a.name.localeCompare(b.name));

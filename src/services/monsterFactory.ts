@@ -256,6 +256,7 @@ class MonsterFactory {
       return {
         text: '',
         tags: [],
+        flags: 0,
       };
     }
 
@@ -270,12 +271,14 @@ class MonsterFactory {
       return {
         text: alignmentString,
         tags: [],
+        flags: 0,
       };
     }
 
     return {
       text: alignmentString,
       tags: this.flagsToTags(flags),
+      flags,
     };
   }
 

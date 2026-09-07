@@ -104,6 +104,21 @@ describe('MonsterFactory', () => {
       });
       expect(ne.alignment.text).toBe('neutral evil');
       expect(ne.alignment.tags).toContain('neutral evil');
+      // Regression: flags must be a non-zero bitmask, not just tags -
+      // filter code (useMonsterFilter.js) matches on alignment.flags.
+      expect(typeof ne.alignment.flags).toBe('number');
+      expect(ne.alignment.flags).toBeGreaterThan(0);
+    });
+
+    it('should give distinct monsters non-overlapping single-alignment flags', () => {
+      const lg = monsterFactory.createMonster({ alignment: 'lawful good' });
+      const ce = monsterFactory.createMonster({ alignment: 'chaotic evil' });
+      expect(lg.alignment.flags & ce.alignment.flags).toBe(0);
+    });
+
+    it('should set flags to 0 for unparseable/empty alignment', () => {
+      const none = monsterFactory.createMonster({ alignment: '' });
+      expect(none.alignment.flags).toBe(0);
     });
 
     it('should handle complex alignments', () => {

@@ -1,23 +1,28 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ref } from 'vue';
 import { useMonsterFilter } from '../useMonsterFilter';
+import { monsterFactory } from '@/services/monsterFactory';
+import { metaInfo } from '@/services/metaInfo';
 
 // Mock library service
+const mockLibrary = vi.hoisted(() => ({ encounters: [] as any[] }));
 vi.mock('@/services/library', () => ({
-  library: {
-    encounters: [],
-  },
+  library: mockLibrary,
 }));
 
 describe('useMonsterFilter', () => {
+  beforeEach(() => {
+    mockLibrary.encounters = [];
+  });
+
   const createMockMonster = (name: string, cr: number, size: string, type: string) => ({
     id: name.toLowerCase().replace(/\s/g, '-'),
     name,
-    cr: { string: cr.toString(), value: cr, numeric: cr },
+    cr: { string: cr.toString(), value: cr },
     size,
     sizeSort: { Tiny: 0, Small: 1, Medium: 2, Large: 3, Huge: 4, Gargantuan: 5 }[size] || 2,
     type,
-    alignment: { text: 'Neutral' },
+    alignment: { text: 'Neutral', tags: [], flags: 0 },
     sources: [{ name: 'Monster Manual' }],
     searchable: name.toLowerCase(),
     legendary: false,
@@ -112,9 +117,9 @@ describe('useMonsterFilter', () => {
       ]);
 
       // Add different alignments
-      monsters.value[0].alignment = { text: 'Lawful Evil' };
-      monsters.value[1].alignment = { text: 'Lawful Good' };
-      monsters.value[2].alignment = { text: 'Neutral Evil' };
+      monsters.value[0].alignment = { text: 'Lawful Evil', tags: [], flags: 0 };
+      monsters.value[1].alignment = { text: 'Lawful Good', tags: [], flags: 0 };
+      monsters.value[2].alignment = { text: 'Neutral Evil', tags: [], flags: 0 };
 
       const filters = {
         sort: 'alignment',
@@ -274,6 +279,253 @@ describe('useMonsterFilter', () => {
 
       expect(filteredMonsters.value).toHaveLength(1);
       expect(filteredMonsters.value[0].name).toBe('Wolf');
+    });
+  });
+
+  // Every SearchForm.vue filter control gets its own describe block below,
+  // exercised through real monsterFactory/metaInfo objects (not hand-rolled
+  // mocks) so the option value types match production exactly. This is a
+  // regression suite for the bug where minCr/maxCr defaulted to '' but were
+  // checked with `!= null` (true for ''), and alignment objects were missing
+  // their `flags` field entirely - both silently filtered out everything.
+  describe('Min CR filter (number field, default "")', () => {
+    const monsters = ref([
+      monsterFactory.createMonster({ name: 'Rat', cr: '0', sources: 'Monster Manual' }),
+      monsterFactory.createMonster({ name: 'Kobold', cr: '1/8', sources: 'Monster Manual' }),
+      monsterFactory.createMonster({ name: 'Goblin', cr: '1/4', sources: 'Monster Manual' }),
+      monsterFactory.createMonster({ name: 'Dragon', cr: '15', sources: 'Monster Manual' }),
+    ]);
+    const baseFilters = { sort: 'name', source: { 'Monster Manual': true } };
+
+    it('does not filter anything when left at its default empty string', () => {
+      const filters = { ...baseFilters, minCr: '', maxCr: '' };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value).toHaveLength(4);
+    });
+
+    it('excludes monsters below the selected CR when used alone (maxCr left at default)', () => {
+      const filters = { ...baseFilters, minCr: metaInfo.crList[1].value, maxCr: '' }; // 1/8
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value.map(m => m.name)).toEqual(['Dragon', 'Goblin', 'Kobold']);
+    });
+
+    it('is inclusive at the boundary (monster exactly at minCr is kept)', () => {
+      const filters = { ...baseFilters, minCr: 0.125, maxCr: '' };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value.map(m => m.name)).toContain('Kobold');
+    });
+  });
+
+  describe('Max CR filter (number field, default "")', () => {
+    const monsters = ref([
+      monsterFactory.createMonster({ name: 'Rat', cr: '0', sources: 'Monster Manual' }),
+      monsterFactory.createMonster({ name: 'Kobold', cr: '1/8', sources: 'Monster Manual' }),
+      monsterFactory.createMonster({ name: 'Goblin', cr: '1/4', sources: 'Monster Manual' }),
+      monsterFactory.createMonster({ name: 'Dragon', cr: '15', sources: 'Monster Manual' }),
+    ]);
+    const baseFilters = { sort: 'name', source: { 'Monster Manual': true } };
+
+    it('excludes monsters above the selected CR when used alone (minCr left at default)', () => {
+      const filters = { ...baseFilters, minCr: '', maxCr: metaInfo.crList[1].value }; // 1/8
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value.map(m => m.name)).toEqual(['Kobold', 'Rat']);
+    });
+
+    it('is inclusive at the boundary (monster exactly at maxCr is kept)', () => {
+      const filters = { ...baseFilters, minCr: '', maxCr: 0.125 };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value.map(m => m.name)).toContain('Kobold');
+    });
+
+    it('combined with minCr narrows to an exact CR range', () => {
+      const filters = { ...baseFilters, minCr: 0.125, maxCr: 0.125 };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value.map(m => m.name)).toEqual(['Kobold']);
+    });
+  });
+
+  describe('Alignment filter (object field bound to metaInfo.alignments, default "")', () => {
+    const lawfulGood = monsterFactory.createMonster({ name: 'Paladin', alignment: 'lawful good', sources: 'Monster Manual' });
+    const chaoticEvil = monsterFactory.createMonster({ name: 'Demon', alignment: 'chaotic evil', sources: 'Monster Manual' });
+    const unaligned = monsterFactory.createMonster({ name: 'Zombie', alignment: 'unaligned', sources: 'Monster Manual' });
+    const monsters = ref([lawfulGood, chaoticEvil, unaligned]);
+    const baseFilters = { sort: 'name', source: { 'Monster Manual': true } };
+
+    it('does not filter anything when left at its default empty string', () => {
+      const filters = { ...baseFilters, alignment: '' };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value).toHaveLength(3);
+    });
+
+    it('matches only monsters sharing a flag bit with a specific alignment', () => {
+      const filters = { ...baseFilters, alignment: metaInfo.alignments.lg };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value.map(m => m.name)).toEqual(['Paladin']);
+    });
+
+    it('"any" matches every aligned monster but excludes unaligned', () => {
+      const filters = { ...baseFilters, alignment: metaInfo.alignments.any };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value.map(m => m.name)).toEqual(['Demon', 'Paladin']);
+    });
+
+    it('"unaligned" matches only the unaligned monster', () => {
+      const filters = { ...baseFilters, alignment: metaInfo.alignments.unaligned };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value.map(m => m.name)).toEqual(['Zombie']);
+    });
+
+    it('"any_evil" matches chaotic evil but not lawful good', () => {
+      const filters = { ...baseFilters, alignment: metaInfo.alignments.any_evil };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value.map(m => m.name)).toEqual(['Demon']);
+    });
+  });
+
+  describe('Type filter (string field, default "")', () => {
+    it('does not filter anything when left at its default empty string', () => {
+      const monsters = ref([
+        createMockMonster('Goblin', 1/4, 'Small', 'Humanoid'),
+        createMockMonster('Wolf', 1/4, 'Medium', 'Beast'),
+      ]);
+      const filters = { type: '', sort: 'name', source: { 'Monster Manual': true } };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value).toHaveLength(2);
+    });
+  });
+
+  describe('Size filter (string field, default "")', () => {
+    it('does not filter anything when left at its default empty string', () => {
+      const monsters = ref([
+        createMockMonster('Goblin', 1/4, 'Small', 'Humanoid'),
+        createMockMonster('Giant', 5, 'Huge', 'Giant'),
+      ]);
+      const filters = { size: '', sort: 'name', source: { 'Monster Manual': true } };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value).toHaveLength(2);
+    });
+  });
+
+  describe('Legendary filter (string field, default "")', () => {
+    const monsters = ref([
+      { ...createMockMonster('Commoner', 0, 'Medium', 'Humanoid'), legendary: false, lair: false },
+      { ...createMockMonster('Ancient Dragon', 20, 'Gargantuan', 'Dragon'), legendary: true, lair: false },
+      { ...createMockMonster('Lich', 21, 'Medium', 'Undead'), legendary: false, lair: true },
+    ]);
+    const baseFilters = { sort: 'name', source: { 'Monster Manual': true } };
+
+    it('does not filter anything when left at its default empty string', () => {
+      const filters = { ...baseFilters, legendary: '' };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value).toHaveLength(3);
+    });
+
+    it('"Ordinary" keeps only non-legendary, non-lair monsters', () => {
+      const filters = { ...baseFilters, legendary: 'Ordinary' };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value.map(m => m.name)).toEqual(['Commoner']);
+    });
+
+    it('"Legendary" keeps only legendary monsters', () => {
+      const filters = { ...baseFilters, legendary: 'Legendary' };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value.map(m => m.name)).toEqual(['Ancient Dragon']);
+    });
+
+    it('"Legendary (in lair)" keeps only lair monsters', () => {
+      const filters = { ...baseFilters, legendary: 'Legendary (in lair)' };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value.map(m => m.name)).toEqual(['Lich']);
+    });
+  });
+
+  describe('Environment/terrain filter (string field, default "")', () => {
+    it('does not filter anything when left at its default empty string', () => {
+      const monsters = ref([
+        createMockMonster('Wolf', 1/4, 'Medium', 'Beast'),
+        { ...createMockMonster('Shark', 1/2, 'Medium', 'Beast'), environment: ['Underwater'] },
+      ]);
+      const filters = { environment: '', sort: 'name', source: { 'Monster Manual': true } };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value).toHaveLength(2);
+    });
+  });
+
+  describe('Source filter (checkbox record field)', () => {
+    it('excludes monsters whose only source is unchecked', () => {
+      const monsters = ref([
+        { ...createMockMonster('SRD Goblin', 1/4, 'Small', 'Humanoid'), sources: [{ name: 'Monster Manual' }] },
+        { ...createMockMonster('Homebrew Beast', 1, 'Medium', 'Beast'), sources: [{ name: 'Homebrew' }] },
+      ]);
+      const filters = { sort: 'name', source: { 'Monster Manual': true, Homebrew: false } };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value.map(m => m.name)).toEqual(['SRD Goblin']);
+    });
+
+    it('includes a monster if any one of its sources is checked', () => {
+      const monsters = ref([
+        {
+          ...createMockMonster('Multi-source Monster', 1, 'Medium', 'Beast'),
+          sources: [{ name: 'Homebrew' }, { name: 'Monster Manual' }],
+        },
+      ]);
+      const filters = { sort: 'name', source: { 'Monster Manual': true, Homebrew: false } };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value).toHaveLength(1);
+    });
+  });
+
+  describe('Pool/table filter (string field referencing a saved pool)', () => {
+    it('does not filter anything when left at its default empty string', () => {
+      const monsters = ref([createMockMonster('Goblin', 1/4, 'Small', 'Humanoid')]);
+      const filters = { pool: '', sort: 'name', source: { 'Monster Manual': true } };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value).toHaveLength(1);
+    });
+
+    it('keeps only monsters present in the named saved pool', () => {
+      const goblin = createMockMonster('Goblin', 1/4, 'Small', 'Humanoid');
+      const wolf = createMockMonster('Wolf', 1/4, 'Medium', 'Beast');
+      mockLibrary.encounters = [
+        { type: 'pool', name: 'My Table', groups: { [goblin.id]: { qty: 1 } } },
+      ];
+      const monsters = ref([goblin, wolf]);
+      const filters = { pool: 'My Table', sort: 'name', source: { 'Monster Manual': true } };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value.map(m => m.name)).toEqual(['Goblin']);
+    });
+  });
+
+  describe('Search text box (string field, default "")', () => {
+    it('does not filter anything when left at its default empty string', () => {
+      const monsters = ref([
+        createMockMonster('Goblin', 1/4, 'Small', 'Humanoid'),
+        createMockMonster('Wolf', 1/4, 'Medium', 'Beast'),
+      ]);
+      const filters = { search: '', sort: 'name', source: { 'Monster Manual': true } };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value).toHaveLength(2);
+    });
+
+    it('supports plain substring search (case-insensitive)', () => {
+      const monsters = ref([
+        createMockMonster('Red Dragon', 15, 'Huge', 'Dragon'),
+        createMockMonster('Goblin', 1/4, 'Small', 'Humanoid'),
+      ]);
+      const filters = { search: 'DRAGON', sort: 'name', source: { 'Monster Manual': true } };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value.map(m => m.name)).toEqual(['Red Dragon']);
+    });
+
+    it('supports /regex/ search syntax', () => {
+      const monsters = ref([
+        createMockMonster('Red Dragon', 15, 'Huge', 'Dragon'),
+        createMockMonster('Blue Dragon', 15, 'Huge', 'Dragon'),
+        createMockMonster('Goblin', 1/4, 'Small', 'Humanoid'),
+      ]);
+      const filters = { search: '/^red/', sort: 'name', source: { 'Monster Manual': true } };
+      const { filteredMonsters } = useMonsterFilter(monsters, filters);
+      expect(filteredMonsters.value.map(m => m.name)).toEqual(['Red Dragon']);
     });
   });
 });

@@ -18,6 +18,7 @@ export interface ChallengeRating {
 export interface Alignment {
   text: string; // "Lawful Good", "Chaotic Evil", etc.
   tags: string[]; // ["lawful", "good"]
+  flags: number; // bitmask matching the flags in ALIGNMENTS filter definitions
   neutral?: boolean;
 }
 

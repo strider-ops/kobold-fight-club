@@ -17,14 +17,14 @@
 
       <select class="form-control" v-model="filters.minCr">
         <option value="">Min CR</option>
-        <option v-for="cr in crList" :key="cr.string" :value="cr.numeric">
+        <option v-for="cr in crList" :key="cr.string" :value="cr.value">
           {{ cr.string }}
         </option>
       </select>
 
       <select class="form-control" v-model="filters.maxCr">
         <option value="">Max CR</option>
-        <option v-for="cr in crList" :key="cr.string" :value="cr.numeric">
+        <option v-for="cr in crList" :key="cr.string" :value="cr.value">
           {{ cr.string }}
         </option>
       </select>
