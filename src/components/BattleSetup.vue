@@ -39,7 +39,7 @@
       <CombatantSetup
         v-for="(combatant, index) in combatants"
         :key="index"
-        :combatant="combatant"
+        :index="index"
       />
     </div>
   </div>

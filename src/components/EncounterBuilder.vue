@@ -40,8 +40,8 @@
         </div>
       </div>
       <div class="col-md-8">
-        <SearchForm :filters="filters" />
-        <MonsterTable :filters="filters" />
+        <SearchForm />
+        <MonsterTable />
       </div>
     </div>
   </div>

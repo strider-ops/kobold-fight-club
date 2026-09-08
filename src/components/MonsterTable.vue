@@ -180,32 +180,26 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
-import { useMonsters, useSources, useEncounter, useMonsterFilter } from '../composables';
+import { useMonsters, useSources, useEncounter, useMonsterFilter, useFilters } from '../composables';
 import { isHttpUrl } from '@/services/monsterFactory';
 
-const props = defineProps({
-  filters: {
-    type: Object,
-    required: true,
-  },
-});
-
+const { filters } = useFilters();
 const { all: allMonsters } = useMonsters();
 const { shortNames } = useSources();
 const { add: addToEncounter, threat } = useEncounter();
 
-const { filteredMonsters, hiddenCount } = useMonsterFilter(allMonsters, props.filters);
+const { filteredMonsters, hiddenCount } = useMonsterFilter(allMonsters, filters);
 
 // Pagination
 const currentPage = ref(1);
 
 const totalPages = computed(() => {
-  return Math.ceil(filteredMonsters.value.length / props.filters.pageSize);
+  return Math.ceil(filteredMonsters.value.length / filters.pageSize);
 });
 
 const paginatedMonsters = computed(() => {
-  const start = (currentPage.value - 1) * props.filters.pageSize;
-  const end = start + props.filters.pageSize;
+  const start = (currentPage.value - 1) * filters.pageSize;
+  const end = start + filters.pageSize;
   return filteredMonsters.value.slice(start, end);
 });
 
@@ -234,7 +228,7 @@ const goToPage = (page) => {
 };
 
 // Reset to page 1 when filters change
-watch(() => [props.filters.search, props.filters.type, props.filters.size, props.filters.minCr, props.filters.maxCr], () => {
+watch(() => [filters.search, filters.type, filters.size, filters.minCr, filters.maxCr], () => {
   currentPage.value = 1;
 });
 

@@ -1,7 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import SearchForm from '../SearchForm.vue';
+
+const mockFilters = reactive({
+  search: '',
+  size: '',
+  type: '',
+  alignment: '',
+  minCr: '',
+  maxCr: '',
+  environment: '',
+  legendary: '',
+  pool: '',
+  sort: 'name',
+  source: {} as Record<string, boolean>,
+  pageSize: 10,
+});
 
 // Mock composables
 vi.mock('../../composables', () => ({
@@ -20,6 +35,7 @@ vi.mock('../../composables', () => ({
     updateSourceFilters: vi.fn(),
   }),
   useFilters: () => ({
+    filters: mockFilters,
     resetFilters: vi.fn(),
   }),
   useHomebrew: () => ({
@@ -33,30 +49,29 @@ vi.mock('../../composables', () => ({
   }),
 }));
 
+const defaultFilters = {
+  search: '',
+  size: '',
+  type: '',
+  alignment: '',
+  minCr: '',
+  maxCr: '',
+  environment: '',
+  legendary: '',
+  pool: '',
+  sort: 'name',
+  source: {} as Record<string, boolean>,
+  pageSize: 10,
+};
+
 describe('SearchForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    Object.assign(mockFilters, defaultFilters);
   });
 
   it('should render the reset filters button', () => {
-    const filters = {
-      search: '',
-      size: '',
-      type: '',
-      alignment: '',
-      minCr: '',
-      maxCr: '',
-      environment: '',
-      legendary: '',
-      pool: '',
-      sort: 'name',
-      source: {},
-      pageSize: 10,
-    };
-
-    const wrapper = mount(SearchForm, {
-      props: { filters },
-    });
+    const wrapper = mount(SearchForm);
 
     const resetButton = wrapper.find('button.btn-danger');
     expect(resetButton.exists()).toBe(true);
@@ -64,24 +79,19 @@ describe('SearchForm', () => {
   });
 
   it('should bind filter props to form controls', () => {
-    const filters = {
+    Object.assign(mockFilters, {
       search: 'dragon',
       size: 'Huge',
       type: 'Dragon',
-      alignment: '',
       minCr: '5',
       maxCr: '10',
       environment: 'Forest',
       legendary: 'Legendary',
-      pool: '',
       sort: 'cr',
-      source: {},
       pageSize: 25,
-    };
-
-    const wrapper = mount(SearchForm, {
-      props: { filters },
     });
+
+    const wrapper = mount(SearchForm);
 
     // Check that search input has the right value
     const searchInput = wrapper.find('input.search-input');
@@ -93,24 +103,7 @@ describe('SearchForm', () => {
   });
 
   it('should render all filter dropdowns', () => {
-    const filters = {
-      search: '',
-      size: '',
-      type: '',
-      alignment: '',
-      minCr: '',
-      maxCr: '',
-      environment: '',
-      legendary: '',
-      pool: '',
-      sort: 'name',
-      source: {},
-      pageSize: 10,
-    };
-
-    const wrapper = mount(SearchForm, {
-      props: { filters },
-    });
+    const wrapper = mount(SearchForm);
 
     // Should have search input
     const searchInput = wrapper.find('input.search-input');
@@ -124,7 +117,7 @@ describe('SearchForm', () => {
 
   describe('all filter dropdowns', () => {
     it('should bind all dropdown values to filters prop', () => {
-      const filters = {
+      Object.assign(mockFilters, {
         search: 'goblin',
         size: 'Medium',
         type: 'Beast',
@@ -133,15 +126,10 @@ describe('SearchForm', () => {
         maxCr: '5',
         environment: 'Forest',
         legendary: 'Legendary',
-        pool: '',
-        sort: 'name',
-        source: {},
         pageSize: 25,
-      };
-
-      const wrapper = mount(SearchForm, {
-        props: { filters },
       });
+
+      const wrapper = mount(SearchForm);
 
       // Verify search input
       const searchInput = wrapper.find('input.search-input');
@@ -156,24 +144,7 @@ describe('SearchForm', () => {
     });
 
     it('should have dropdowns for: size, type, CR (min/max), alignment, terrain, legendary, sort, pageSize', () => {
-      const filters = {
-        search: '',
-        size: '',
-        type: '',
-        alignment: '',
-        minCr: '',
-        maxCr: '',
-        environment: '',
-        legendary: '',
-        pool: '',
-        sort: 'name',
-        source: {},
-        pageSize: 10,
-      };
-
-      const wrapper = mount(SearchForm, {
-        props: { filters },
-      });
+      const wrapper = mount(SearchForm);
 
       const selects = wrapper.findAll('select.form-control');
       const html = wrapper.html();

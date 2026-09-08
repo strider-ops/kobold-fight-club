@@ -58,19 +58,22 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { useCombat } from '../composables/useCombat';
 
 const props = defineProps({
-  combatant: {
-    type: Object,
+  index: {
+    type: Number,
     required: true,
   },
 });
 
-const { rollInitiative } = useCombat();
+const { combatants, rollInitiative } = useCombat();
+
+const combatant = computed(() => combatants.value[props.index]);
 
 const handleRollInitiative = () => {
-  rollInitiative(props.combatant);
+  rollInitiative(combatant.value);
 };
 </script>
 

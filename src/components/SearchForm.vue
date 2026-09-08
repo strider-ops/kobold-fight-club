@@ -395,13 +395,6 @@
 import { ref, computed } from 'vue';
 import { useMetaInfo, useSources, useFilters, useHomebrew, useLibrary } from '../composables';
 
-const props = defineProps({
-  filters: {
-    type: Object,
-    required: true,
-  },
-});
-
 const {
   alignments,
   crList,
@@ -418,7 +411,7 @@ const {
   updateSourceFilters: updateSourcesHelper
 } = useSources();
 
-const { resetFilters } = useFilters();
+const { filters, resetFilters } = useFilters();
 const { packs: homebrewPacks, importFile, remove: removeHomebrewPack, importResult } = useHomebrew();
 const { savedEncounters } = useLibrary();
 
@@ -430,7 +423,7 @@ const builtInContent = computed(() => getContent());
 const savedPools = computed(() => savedEncounters.value.filter(e => e.type === 'pool'));
 
 const updateSourceFilters = (type, enabled) => {
-  updateSourcesHelper({ type, enabled }, props.filters.source);
+  updateSourcesHelper({ type, enabled }, filters.source);
 };
 
 const handleFileImport = (event) => {
