@@ -13,6 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "type-check": "tsc --noEmit",
+    "lint": "eslint .",
     "reconcile": "node scripts/reconcile.mjs",
     "build-db": "node --no-warnings scripts/build-db.mjs",
     "verify": "node --no-warnings scripts/verify.mjs",
@@ -27,12 +28,17 @@
     "vue-router": "5.2.0"
   },
   "devDependencies": {
+    "@eslint/js": "10.0.1",
     "@types/node": "26.3.0",
     "@vue/test-utils": "2.5.0",
+    "eslint": "10.9.0",
+    "eslint-plugin-vue": "10.10.0",
+    "globals": "17.11.0",
     "jsdom": "30.0.1",
     "sass": "1.103.1",
     "typescript": "7.0.2",
-    "vitest": "4.1.11"
+    "vitest": "4.1.11",
+    "vue-eslint-parser": "10.4.1"
   },
   "repository": {
     "type": "git",
