@@ -5,12 +5,36 @@
     <div class="quick-links">
       <h3>Quick Links:</h3>
       <ul>
-        <li><router-link to="/encounter-builder">Encounter Builder</router-link></li>
-        <li><router-link to="/encounter-manager">Manage Encounters</router-link></li>
-        <li><router-link to="/players">Manage Players</router-link></li>
-        <li><router-link to="/battle-setup">Battle Setup</router-link></li>
-        <li><router-link to="/battle-tracker">Battle Tracker</router-link></li>
-        <li><router-link to="/about">About</router-link></li>
+        <li>
+          <router-link to="/encounter-builder">
+            Encounter Builder
+          </router-link>
+        </li>
+        <li>
+          <router-link to="/encounter-manager">
+            Manage Encounters
+          </router-link>
+        </li>
+        <li>
+          <router-link to="/players">
+            Manage Players
+          </router-link>
+        </li>
+        <li>
+          <router-link to="/battle-setup">
+            Battle Setup
+          </router-link>
+        </li>
+        <li>
+          <router-link to="/battle-tracker">
+            Battle Tracker
+          </router-link>
+        </li>
+        <li>
+          <router-link to="/about">
+            About
+          </router-link>
+        </li>
       </ul>
     </div>
   </div>

@@ -2,23 +2,36 @@
   <div class="container">
     <h2>Battle Setup</h2>
 
-    <div v-if="needsPlayers" class="alert alert-warning">
+    <div
+      v-if="needsPlayers"
+      class="alert alert-warning"
+    >
       <p>
         <strong>You must select a party.</strong>
-        <router-link to="/players">Go to Manage Players</router-link>
+        <router-link to="/players">
+          Go to Manage Players
+        </router-link>
       </p>
     </div>
 
-    <div v-if="needsMonsters" class="alert alert-warning">
+    <div
+      v-if="needsMonsters"
+      class="alert alert-warning"
+    >
       <p>
         <strong>You must select an encounter.</strong>
-        <router-link to="/encounter-builder">Go to Encounter Builder</router-link>
+        <router-link to="/encounter-builder">
+          Go to Encounter Builder
+        </router-link>
       </p>
     </div>
 
     <div v-if="!needsPlayers && !needsMonsters">
       <div class="combat-setup-controls">
-        <button class="btn btn-danger btn-lg" @click="startBattle">
+        <button
+          class="btn btn-danger btn-lg"
+          @click="startBattle"
+        >
           Fight!
         </button>
       </div>

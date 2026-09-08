@@ -2,7 +2,10 @@
   <div class="container">
     <h2>Manage Players</h2>
 
-    <div v-if="!parties || parties.length === 0" class="alert alert-info">
+    <div
+      v-if="!parties || parties.length === 0"
+      class="alert alert-info"
+    >
       <p>No parties defined yet. Use the form below to add players.</p>
     </div>
 
@@ -45,21 +48,24 @@
       </div>
     </div>
 
-    <div class="edit-players" style="margin-top: 2rem;">
+    <div
+      class="edit-players"
+      style="margin-top: 2rem;"
+    >
       <h3>Edit Players</h3>
       <p>
-        One character per line. Blank line to separate different parties. Add an exclamation point (!) to an initiative modifier to indicate advantage. Format:<br/>
-        <samp>&lt;CHARACTER NAME&gt; &lt;INITIATIVE MOD&gt; &lt;MAX HP&gt;</samp> <br/>
+        One character per line. Blank line to separate different parties. Add an exclamation point (!) to an initiative modifier to indicate advantage. Format:<br>
+        <samp>&lt;CHARACTER NAME&gt; &lt;INITIATIVE MOD&gt; &lt;MAX HP&gt;</samp> <br>
         <samp>&lt;CHARACTER NAME&gt; &lt;INITIATIVE MOD&gt; &lt;CURRENT HP&gt; / &lt;MAX HP&gt;</samp>
       </p>
 
       <textarea
-        class="edit-players--text-input form-control"
         v-model="rawPlayers"
+        class="edit-players--text-input form-control"
         rows="10"
         placeholder="Smush 3! 55 / 55
 Mercedes 2 34"
-      ></textarea>
+      />
     </div>
   </div>
 </template>

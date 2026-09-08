@@ -3,13 +3,21 @@
     <h2>Encounter Manager</h2>
 
     <!-- No encounters state -->
-    <div v-if="!hasEncounters && !hasUnsavedEncounter" class="encounter-manager--no-encounters">
+    <div
+      v-if="!hasEncounters && !hasUnsavedEncounter"
+      class="encounter-manager--no-encounters"
+    >
       <p>You don't have any encounters saved.</p>
-      <button @click="goToBuilder">Return to encounter builder</button>
+      <button @click="goToBuilder">
+        Return to encounter builder
+      </button>
     </div>
 
     <!-- Unsaved encounter (from builder) -->
-    <div v-if="hasUnsavedEncounter" class="encounter-manager-encounter encounter-manager-encounter__unsaved">
+    <div
+      v-if="hasUnsavedEncounter"
+      class="encounter-manager-encounter encounter-manager-encounter__unsaved"
+    >
       <h3>Current Encounter</h3>
       <div class="encounter-manager-encounter--controls">
         <input
@@ -17,15 +25,25 @@
           placeholder="Enter encounter name..."
           class="encounter-manager-encounter--name-input"
         >
-        <button @click="saveEncounter('encounter')" class="encounter-manager-encounter--save-button">
+        <button
+          class="encounter-manager-encounter--save-button"
+          @click="saveEncounter('encounter')"
+        >
           Save as Encounter
         </button>
-        <button @click="saveEncounter('pool')" class="encounter-manager-encounter--save-button">
+        <button
+          class="encounter-manager-encounter--save-button"
+          @click="saveEncounter('pool')"
+        >
           Save as Table
         </button>
       </div>
 
-      <div class="encounter-manager-monster" v-for="(group, id) in currentGroups" :key="id">
+      <div
+        v-for="(group, id) in currentGroups"
+        :key="id"
+        class="encounter-manager-monster"
+      >
         <span v-if="group.qty > 1">{{ group.qty }}x</span>
         {{ group.monster?.name || 'Unknown' }}
       </div>
@@ -37,18 +55,21 @@
       <ManagerRow
         v-for="enc in savedEncounters"
         :key="enc.name"
-        :storedEncounter="enc"
+        :stored-encounter="enc"
         @remove="removeEncounter"
       />
     </div>
 
     <!-- Saved random encounter tables -->
-    <div v-if="savedPools.length > 0" class="random-encounter-pools">
+    <div
+      v-if="savedPools.length > 0"
+      class="random-encounter-pools"
+    >
       <h3>Random Encounter Tables</h3>
       <ManagerRow
         v-for="enc in savedPools"
         :key="enc.name"
-        :storedEncounter="enc"
+        :stored-encounter="enc"
         @remove="removeEncounter"
       />
     </div>

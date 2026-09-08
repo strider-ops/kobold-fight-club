@@ -1,7 +1,9 @@
 <template>
   <div class="group-info">
     <div class="group-info--input">
-      <h2 class="group-info--header">Group Info</h2>
+      <h2 class="group-info--header">
+        Group Info
+      </h2>
       <div
         v-for="(partyLevel, index) in partyLevels"
         :key="index"
@@ -10,9 +12,9 @@
         <div class="col-xs-5">
           <label>Player Count:</label>
           <input
+            v-model.number="partyLevel.playerCount"
             class="form-control input-sm"
             type="number"
-            v-model.number="partyLevel.playerCount"
             min="0"
             @change="savePartyLevels"
           >
@@ -23,18 +25,21 @@
             class="form-control input-sm"
             type="number"
             :value="partyLevel.level.level"
-            @change="setLevel(index, $event.target.valueAsNumber)"
             min="1"
             max="20"
+            @change="setLevel(index, $event.target.valueAsNumber)"
           >
         </div>
-        <div class="col-xs-3" style="padding-top: 20px;">
+        <div
+          class="col-xs-3"
+          style="padding-top: 20px;"
+        >
           <button
             v-if="index > 0"
             class="btn btn-xs btn-danger"
             @click="removePartyLevel(index)"
           >
-            <i class="fa fa-trash-o"></i>
+            <i class="fa fa-trash-o" />
           </button>
         </div>
       </div>
@@ -43,7 +48,7 @@
         title="Add Another Party Level"
         @click="addPartyLevel"
       >
-        <i class="fa fa-plus"></i> Add Another Level
+        <i class="fa fa-plus" /> Add Another Level
       </button>
     </div>
     <ul class="group-info--guidelines list-unstyled">
@@ -71,7 +76,7 @@
           {{ totalExpLevels.deadly.toLocaleString() }} exp
         </span>
       </li>
-      <br/>
+      <br>
       <li>
         <span>Daily Budget:</span>
         <span class="group-info--guidelines-values pt-1">

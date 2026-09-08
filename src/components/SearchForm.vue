@@ -1,104 +1,212 @@
 <template>
   <div class="search">
     <div class="search--search-form form-inline">
-      <select class="form-control" v-model="filters.size">
-        <option value="">Any Size</option>
-        <option v-for="size in sizes" :key="size" :value="size">
+      <select
+        v-model="filters.size"
+        class="form-control"
+      >
+        <option value="">
+          Any Size
+        </option>
+        <option
+          v-for="size in sizes"
+          :key="size"
+          :value="size"
+        >
           {{ size }}
         </option>
       </select>
 
-      <select class="form-control" v-model="filters.type">
-        <option value="">Any Type</option>
-        <option v-for="type in types" :key="type" :value="type">
+      <select
+        v-model="filters.type"
+        class="form-control"
+      >
+        <option value="">
+          Any Type
+        </option>
+        <option
+          v-for="type in types"
+          :key="type"
+          :value="type"
+        >
           {{ type }}
         </option>
       </select>
 
-      <select class="form-control" v-model="filters.minCr">
-        <option value="">Min CR</option>
-        <option v-for="cr in crList" :key="cr.string" :value="cr.value">
+      <select
+        v-model="filters.minCr"
+        class="form-control"
+      >
+        <option value="">
+          Min CR
+        </option>
+        <option
+          v-for="cr in crList"
+          :key="cr.string"
+          :value="cr.value"
+        >
           {{ cr.string }}
         </option>
       </select>
 
-      <select class="form-control" v-model="filters.maxCr">
-        <option value="">Max CR</option>
-        <option v-for="cr in crList" :key="cr.string" :value="cr.value">
+      <select
+        v-model="filters.maxCr"
+        class="form-control"
+      >
+        <option value="">
+          Max CR
+        </option>
+        <option
+          v-for="cr in crList"
+          :key="cr.string"
+          :value="cr.value"
+        >
           {{ cr.string }}
         </option>
       </select>
 
-      <select class="form-control" v-model="filters.alignment">
-        <option value="">Any Alignment</option>
-        <option v-for="(alignment, key) in alignments" :key="key" :value="alignment">
+      <select
+        v-model="filters.alignment"
+        class="form-control"
+      >
+        <option value="">
+          Any Alignment
+        </option>
+        <option
+          v-for="(alignment, key) in alignments"
+          :key="key"
+          :value="alignment"
+        >
           {{ alignment.text }}
         </option>
       </select>
 
-      <select class="form-control" v-model="filters.legendary">
-        <option value="">Any Legendary</option>
-        <option v-for="legendary in legendaryList" :key="legendary" :value="legendary">
+      <select
+        v-model="filters.legendary"
+        class="form-control"
+      >
+        <option value="">
+          Any Legendary
+        </option>
+        <option
+          v-for="legendary in legendaryList"
+          :key="legendary"
+          :value="legendary"
+        >
           {{ legendary }}
         </option>
       </select>
 
-      <select class="form-control" v-model="filters.environment">
-        <option value="">Any Terrain</option>
-        <option v-for="env in environments" :key="env" :value="env">
+      <select
+        v-model="filters.environment"
+        class="form-control"
+      >
+        <option value="">
+          Any Terrain
+        </option>
+        <option
+          v-for="env in environments"
+          :key="env"
+          :value="env"
+        >
           {{ env }}
         </option>
       </select>
 
-      <button class="btn btn-danger" @click="resetFilters">Reset Filters</button>
+      <button
+        class="btn btn-danger"
+        @click="resetFilters"
+      >
+        Reset Filters
+      </button>
 
-      <select class="form-control search--page-size" v-model.number="filters.pageSize">
-        <option v-for="size in [10, 25, 50, 100, 250, 500, 1000]" :key="size" :value="size">
+      <select
+        v-model.number="filters.pageSize"
+        class="form-control search--page-size"
+      >
+        <option
+          v-for="size in [10, 25, 50, 100, 250, 500, 1000]"
+          :key="size"
+          :value="size"
+        >
           {{ size }} / page
         </option>
       </select>
 
       <span v-if="savedPools.length > 0">
-        <select class="form-control search--search-form--pool-control" v-model="filters.pool">
+        <select
+          v-model="filters.pool"
+          class="form-control search--search-form--pool-control"
+        >
           <option value="">Any Table</option>
-          <option v-for="pool in savedPools" :key="pool.name" :value="pool.name">
+          <option
+            v-for="pool in savedPools"
+            :key="pool.name"
+            :value="pool.name"
+          >
             {{ pool.name }} Table
           </option>
         </select>
       </span>
 
-      <select class="form-control search--search-form--sort-control" v-model="filters.sort">
-        <option v-for="sortChoice in sortChoices" :key="sortChoice.value" :value="sortChoice.value">
+      <select
+        v-model="filters.sort"
+        class="form-control search--search-form--sort-control"
+      >
+        <option
+          v-for="sortChoice in sortChoices"
+          :key="sortChoice.value"
+          :value="sortChoice.value"
+        >
           Sort by {{ sortChoice.text }}
         </option>
       </select>
 
-      <button type="button" class="btn btn-info" @click="showSourcesModal = true">
+      <button
+        type="button"
+        class="btn btn-info"
+        @click="showSourcesModal = true"
+      >
         Set Sources
       </button>
 
-      <button type="button" class="btn btn-info" @click="showContentModal = true">
+      <button
+        type="button"
+        class="btn btn-info"
+        @click="showContentModal = true"
+      >
         Manage Content
       </button>
 
       <label class="sr-only">Search</label>
       <input
+        v-model="filters.search"
         class="form-control search-input search--search-form--search-right"
         type="text"
-        v-model="filters.search"
         placeholder="Search..."
       >
     </div>
 
     <!-- Sources Modal -->
-    <div v-if="showSourcesModal" class="modal" style="display: block;" @click.self="showSourcesModal = false">
+    <div
+      v-if="showSourcesModal"
+      class="modal"
+      style="display: block;"
+      @click.self="showSourcesModal = false"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" @click="showSourcesModal = false">
+            <button
+              type="button"
+              class="close"
+              @click="showSourcesModal = false"
+            >
               <span>&times;</span>
             </button>
-            <h3 class="modal-title">Set Source Material</h3>
+            <h3 class="modal-title">
+              Set Source Material
+            </h3>
           </div>
           <div class="modal-body">
             <div
@@ -106,10 +214,16 @@
               :key="section.name"
               class="sources-modal--source-section"
             >
-              <button class="btn btn-primary" @click="updateSourceFilters(section.name, true)">
+              <button
+                class="btn btn-primary"
+                @click="updateSourceFilters(section.name, true)"
+              >
                 All
               </button>
-              <button class="btn btn-primary" @click="updateSourceFilters(section.name, false)">
+              <button
+                class="btn btn-primary"
+                @click="updateSourceFilters(section.name, false)"
+              >
                 None
               </button>
               <span class="sources-modal--source-section-header">
@@ -124,20 +238,31 @@
                   :class="{ 'search--source__off': !filters.source[source] }"
                 >
                   <label>
-                    <input type="checkbox" v-model="filters.source[source]">
+                    <input
+                      v-model="filters.source[source]"
+                      type="checkbox"
+                    >
                     {{ source }}
                   </label>
                 </li>
               </ul>
             </div>
             <div>
-              <a href="https://github.com/Asmor/5e-monsters/wiki/Extra-content-for-KFC" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://github.com/Asmor/5e-monsters/wiki/Extra-content-for-KFC"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Add additional content
               </a>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" @click="showSourcesModal = false">
+            <button
+              type="button"
+              class="btn btn-default"
+              @click="showSourcesModal = false"
+            >
               Close
             </button>
           </div>
@@ -146,34 +271,61 @@
     </div>
 
     <!-- Content Management Modal -->
-    <div v-if="showContentModal" class="modal" style="display: block;" @click.self="showContentModal = false">
+    <div
+      v-if="showContentModal"
+      class="modal"
+      style="display: block;"
+      @click.self="showContentModal = false"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" @click="showContentModal = false">
+            <button
+              type="button"
+              class="close"
+              @click="showContentModal = false"
+            >
               <span>&times;</span>
             </button>
-            <h3 class="modal-title">Manage Content</h3>
+            <h3 class="modal-title">
+              Manage Content
+            </h3>
           </div>
           <div class="modal-body">
             <h5>Your imported content</h5>
             <ul>
-              <li v-for="pack in homebrewPacks" :key="pack.name" class="row search--content-row">
+              <li
+                v-for="pack in homebrewPacks"
+                :key="pack.name"
+                class="row search--content-row"
+              >
                 <div class="col-lg-1">
-                  <button class="btn btn-danger" @click="removeHomebrew(pack.name)">
-                    <i class="fa fa-trash-o"></i>
+                  <button
+                    class="btn btn-danger"
+                    @click="removeHomebrew(pack.name)"
+                  >
+                    <i class="fa fa-trash-o" />
                   </button>
                 </div>
                 <div class="col-lg-9">
                   {{ pack.name }} &mdash; {{ pack.rows.length }} monsters
                 </div>
               </li>
-              <li v-if="homebrewPacks.length === 0" class="row search--content-row">
-                <div class="col-lg-12"><em>Nothing imported yet.</em></div>
+              <li
+                v-if="homebrewPacks.length === 0"
+                class="row search--content-row"
+              >
+                <div class="col-lg-12">
+                  <em>Nothing imported yet.</em>
+                </div>
               </li>
               <li class="row search--content-row">
                 <div class="col-lg-12">
-                  <input type="file" accept=".csv,.json" @change="handleFileImport">
+                  <input
+                    type="file"
+                    accept=".csv,.json"
+                    @change="handleFileImport"
+                  >
                   <p class="help-block">
                     A CSV using the same columns as the community sheet template
                     (<code>name, cr, size, type, tags, alignment, environment, ac, hp</code>),
@@ -185,13 +337,22 @@
             </ul>
 
             <div v-if="importResult">
-              <div v-if="importResult.added" class="alert alert-success">
+              <div
+                v-if="importResult.added"
+                class="alert alert-success"
+              >
                 Imported {{ importResult.added }} monsters from "{{ importResult.sourceName }}".
               </div>
-              <div v-if="importResult.errors.length" class="alert alert-warning">
+              <div
+                v-if="importResult.errors.length"
+                class="alert alert-warning"
+              >
                 <strong>{{ importResult.skipped }} row(s) skipped:</strong>
                 <ul>
-                  <li v-for="(error, index) in importResult.errors.slice(0, 10)" :key="index">
+                  <li
+                    v-for="(error, index) in importResult.errors.slice(0, 10)"
+                    :key="index"
+                  >
                     {{ error }}
                   </li>
                 </ul>
@@ -203,7 +364,11 @@
 
             <h5>Built in</h5>
             <ul>
-              <li v-for="content in builtInContent" :key="content.name" class="row search--content-row">
+              <li
+                v-for="content in builtInContent"
+                :key="content.name"
+                class="row search--content-row"
+              >
                 <div class="col-lg-10">
                   {{ content.name }}
                   <span v-if="content.shortName">({{ content.shortName }})</span>
@@ -212,7 +377,11 @@
             </ul>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" @click="showContentModal = false">
+            <button
+              type="button"
+              class="btn btn-default"
+              @click="showContentModal = false"
+            >
               Close
             </button>
           </div>
@@ -223,7 +392,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useMetaInfo, useSources, useFilters, useHomebrew, useLibrary } from '../composables';
 
 const props = defineProps({

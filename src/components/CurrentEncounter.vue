@@ -3,8 +3,14 @@
     <h2>
       <span v-if="!isPool">Encounter Info</span>
       <span v-if="isPool">Random Encounter Table</span>
-      <div v-if="!isPool" class="btn-group pull-right">
-        <button class="btn btn-info" @click="generateRandom()">
+      <div
+        v-if="!isPool"
+        class="btn-group pull-right"
+      >
+        <button
+          class="btn btn-info"
+          @click="generateRandom()"
+        >
           {{ randomButtonText }}
         </button>
         <button
@@ -12,22 +18,46 @@
           class="btn btn-info dropdown-toggle"
           @click="showRandomDropdown = !showRandomDropdown"
         >
-          <span class="caret"></span>
+          <span class="caret" />
         </button>
-        <ul v-if="showRandomDropdown" class="dropdown-menu" style="display: block;">
-          <li><a href="#" @click.prevent="generateRandom('easy')">Random Easy</a></li>
-          <li><a href="#" @click.prevent="generateRandom('medium')">Random Medium</a></li>
-          <li><a href="#" @click.prevent="generateRandom('hard')">Random Hard</a></li>
-          <li><a href="#" @click.prevent="generateRandom('deadly')">Random Deadly</a></li>
+        <ul
+          v-if="showRandomDropdown"
+          class="dropdown-menu"
+          style="display: block;"
+        >
+          <li>
+            <a
+              href="#"
+              @click.prevent="generateRandom('easy')"
+            >Random Easy</a>
+          </li>
+          <li>
+            <a
+              href="#"
+              @click.prevent="generateRandom('medium')"
+            >Random Medium</a>
+          </li>
+          <li>
+            <a
+              href="#"
+              @click.prevent="generateRandom('hard')"
+            >Random Hard</a>
+          </li>
+          <li>
+            <a
+              href="#"
+              @click.prevent="generateRandom('deadly')"
+            >Random Deadly</a>
+          </li>
         </ul>
       </div>
     </h2>
     <p>
       No more than
       <input
+        v-model.number="totalMonsters"
         class="current-encounter--total-monsters form-control input-sm"
         type="number"
-        v-model.number="totalMonsters"
       >
       monster<span v-if="totalMonsters != 1">s</span>
     </p>
@@ -37,7 +67,10 @@
     >
       Create an encounter by clicking the Random encounter button or by adding monsters from the monsters table.
     </p>
-    <div class="current-encounter" :class="{ 'current-encounter__shown': encounterQty }">
+    <div
+      class="current-encounter"
+      :class="{ 'current-encounter__shown': encounterQty }"
+    >
       <div class="current-encounter--body">
         <div class="current-encounter--table">
           <div
@@ -58,64 +91,91 @@
                 </span>
                 <div
                   v-for="source in group.monster.sources"
-                  :key="source.name"
                   v-show="filters.source[source.name]"
+                  :key="source.name"
                   class="current-encounter--monster-source"
                   :title="`${source.name} p.${source.page}`"
                 >
                   {{ source.name }}
                   <span v-if="source.page">p.{{ source.page }}</span>
                   <span v-if="isHttpUrl(source.url)">
-                    <a target="_blank" rel="noopener noreferrer" :href="source.url">[Link]</a>
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      :href="source.url"
+                    >[Link]</a>
                   </span>
                 </div>
               </div>
             </div>
-            <div v-if="!isPool" class="current-encounter--monster-qty-col">
+            <div
+              v-if="!isPool"
+              class="current-encounter--monster-qty-col"
+            >
               <button
                 class="btn btn-default"
                 title="Randomize Monster"
                 @click="randomizeMonster(group.monster)"
               >
-                <i class="fa fa-random"></i>
+                <i class="fa fa-random" />
               </button>
               <input
+                v-model.number="group.qty"
                 class="current-encounter--monster-qty form-control input-lg"
                 type="number"
-                v-model.number="group.qty"
               >
               <div class="current-encounter--monster-qty-btns">
-                <button class="btn btn-xs btn-success" @click="addMonster(group.monster)">
-                  <i class="fa fa-plus"></i>
+                <button
+                  class="btn btn-xs btn-success"
+                  @click="addMonster(group.monster)"
+                >
+                  <i class="fa fa-plus" />
                 </button>
-                <button class="btn btn-xs btn-danger" @click="removeMonster(group.monster)">
-                  <i class="fa fa-minus"></i>
+                <button
+                  class="btn btn-xs btn-danger"
+                  @click="removeMonster(group.monster)"
+                >
+                  <i class="fa fa-minus" />
                 </button>
               </div>
             </div>
           </div>
         </div>
-        <div v-if="!isPool" class="current-encounter--totals">
+        <div
+          v-if="!isPool"
+          class="current-encounter--totals"
+        >
           <div class="current-encounter--totals-difficulty">
             Difficulty: {{ difficulty }}
           </div>
           <div class="current-encounter--totals-xp">
             <span>
               Total XP: {{ exp.toLocaleString() }}
-              <span v-if="totalPlayerCount > 0" class="current-encounter--totals-individual-xp">
+              <span
+                v-if="totalPlayerCount > 0"
+                class="current-encounter--totals-individual-xp"
+              >
                 ({{ Math.floor(exp / totalPlayerCount).toLocaleString() }} per player)
               </span>
             </span>
             <span>
               Adjusted XP: {{ adjustedExp.toLocaleString() }}
-              <span v-if="totalPlayerCount > 0" class="current-encounter--totals-individual-xp">
+              <span
+                v-if="totalPlayerCount > 0"
+                class="current-encounter--totals-individual-xp"
+              >
                 ({{ Math.floor(adjustedExp / totalPlayerCount).toLocaleString() }} per player)
               </span>
             </span>
           </div>
         </div>
         <div class="current-encounter--btns">
-          <button class="btn btn-danger btn-new" @click="newEncounter">New</button>
+          <button
+            class="btn btn-danger btn-new"
+            @click="newEncounter"
+          >
+            New
+          </button>
           <button
             v-if="!reference"
             class="btn btn-primary"

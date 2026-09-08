@@ -1,5 +1,8 @@
 <template>
-  <div class="encounter-builder container-fluid" role="main">
+  <div
+    class="encounter-builder container-fluid"
+    role="main"
+  >
     <div class="row">
       <div class="col-md-4">
         <GroupInfo />
@@ -18,7 +21,7 @@
                   'fa-toggle-up': !encounterShown,
                   'fa-toggle-down': encounterShown
                 }"
-              ></i>
+              />
               <div class="encounter-builder--encounter-info-text">
                 <span v-if="encounterExp">
                   {{ monsterQtyString }}, {{ encounterExp.toLocaleString() }} exp ({{ encounterDifficulty }})

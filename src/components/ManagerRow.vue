@@ -28,7 +28,11 @@
       </span>
     </div>
 
-    <div class="encounter-manager-monster" v-for="(qty, id) in storedEncounter.groups" :key="id">
+    <div
+      v-for="(qty, id) in storedEncounter.groups"
+      :key="id"
+      class="encounter-manager-monster"
+    >
       <span v-if="qty > 1">{{ qty }}x</span>
       {{ monsters.getMonsterById(id)?.name || 'Unknown' }}
     </div>
@@ -66,8 +70,7 @@ function calculateExp(storedEncounter) {
 
 function handleLoad() {
   encounter.resetEncounter(props.storedEncounter);
-  // Navigate to encounter-builder
-  window.location.hash = '#/encounter-builder';
+  router.push('/encounter-builder');
 }
 
 function handleRemove() {

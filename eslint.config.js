@@ -43,7 +43,9 @@ export default [
       // mixed .js/.vue files) - relax rules that would otherwise flag a huge
       // volume of pre-existing, working code rather than real bugs.
       'vue/multi-word-component-names': 'off',
-      'no-unused-vars': 'warn',
+      // ignoreRestSiblings: don't flag vars only used to omit a key via
+      // rest-destructuring, e.g. `({ _priority, ...rest }) => rest`.
+      'no-unused-vars': ['warn', { ignoreRestSiblings: true }],
       // filters/combatant are shared reactive() objects intentionally passed
       // as props and mutated in place (not copy-in/event-out) - a deliberate
       // architectural choice here, not the anti-pattern this rule targets.

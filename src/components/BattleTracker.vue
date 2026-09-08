@@ -2,10 +2,15 @@
   <div class="container">
     <h2>Battle Tracker</h2>
 
-    <div v-if="!combatants || combatants.length === 0" class="alert alert-warning">
+    <div
+      v-if="!combatants || combatants.length === 0"
+      class="alert alert-warning"
+    >
       <p>
         No combatants in battle.
-        <router-link to="/encounter-builder">Go to Encounter Builder</router-link>
+        <router-link to="/encounter-builder">
+          Go to Encounter Builder
+        </router-link>
       </p>
     </div>
 
@@ -14,9 +19,9 @@
         <div class="form-inline">
           <label>Damage/Heal Amount:</label>
           <input
+            v-model.number="deltaValue"
             type="number"
             class="form-control input-lg"
-            v-model.number="deltaValue"
             min="0"
             style="width: 100px; margin: 0 1rem;"
           >
@@ -39,7 +44,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCombat } from '../composables/useCombat';
 import Combatant from './Combatant.vue';

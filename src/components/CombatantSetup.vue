@@ -5,8 +5,8 @@
   >
     <span class="combatant-setup--name">
       <input
-        class="combatant-setup--input combatant-setup--input__name form-control"
         v-model="combatant.name"
+        class="combatant-setup--input combatant-setup--input__name form-control"
       >
     </span>
 
@@ -21,9 +21,9 @@
       Initiative:
       <span v-if="!combatant.fixedInitiative">
         <input
+          v-model.number="combatant.initiative"
           type="number"
           class="form-control input-sm combatant-setup--input"
-          v-model.number="combatant.initiative"
           style="width: 80px; display: inline-block;"
         >
         <button
@@ -44,9 +44,9 @@
         HP:
         <input
           v-if="combatant.type !== 'player'"
+          v-model.number="combatant.hp"
           type="number"
           class="form-control input-sm combatant-setup--input"
-          v-model.number="combatant.hp"
           style="width: 80px; display: inline-block;"
         >
         <span v-else>

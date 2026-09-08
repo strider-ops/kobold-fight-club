@@ -4,7 +4,7 @@
       <table class="monster-table--table table table-bordered table-striped">
         <thead>
           <tr>
-            <th class="monster-table--column monster-table--column__button"></th>
+            <th class="monster-table--column monster-table--column__button" />
             <th
               class="monster-table--column monster-table--column__sortable monster-table--column__name"
               @click="filters.sort = 'name'"
@@ -41,8 +41,14 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-if="filters.search && hiddenCount > 0" class="monster-table--warning-row">
-            <td colspan="7" class="monster-table--filter-warning-cell">
+          <tr
+            v-if="filters.search && hiddenCount > 0"
+            class="monster-table--warning-row"
+          >
+            <td
+              colspan="7"
+              class="monster-table--filter-warning-cell"
+            >
               {{ hiddenCount }} monsters hidden by filters or in unselected sources
             </td>
           </tr>
@@ -54,15 +60,21 @@
             class="monster-table--row"
           >
             <td class="monster-table--button-cell">
-              <button class="btn btn-sm btn-success" @click="addMonsterToEncounter(monster)">
-                <i class="fa fa-plus"></i>
+              <button
+                class="btn btn-sm btn-success"
+                @click="addMonsterToEncounter(monster)"
+              >
+                <i class="fa fa-plus" />
               </button>
             </td>
             <td class="monster-table--name-cell">
               <div class="monster-table--name">
                 {{ monster.name }}
               </div>
-              <div v-if="monster.section" class="monster-table--section">
+              <div
+                v-if="monster.section"
+                class="monster-table--section"
+              >
                 <span class="monster-table--label">Section:</span>
                 {{ monster.section }}
               </div>
@@ -81,7 +93,10 @@
             <td class="monster-table--type-cell">
               <span class="monster-table--label">Type:</span>
               {{ monster.type }}
-              <span v-if="monster.tags" class="monster-table--tags">
+              <span
+                v-if="monster.tags"
+                class="monster-table--tags"
+              >
                 ({{ monster.tags.join(', ') }})
               </span>
             </td>
@@ -94,8 +109,8 @@
             <td class="monster-table--source-cell">
               <div
                 v-for="source in monster.sources"
-                :key="source.name"
                 v-show="filters.source[source.name]"
+                :key="source.name"
                 class="monster-table--sources"
               >
                 <span
@@ -109,7 +124,11 @@
                 </span>
                 <span v-if="source.page">&nbsp;p.{{ source.page }}</span>
                 <span v-if="isHttpUrl(source.url)">
-                  <a target="_blank" rel="noopener noreferrer" :href="source.url">[Link]</a>
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    :href="source.url"
+                  >[Link]</a>
                 </span>
               </div>
             </td>
@@ -119,10 +138,19 @@
     </div>
 
     <div class="pagination-container">
-      <nav v-if="totalPages > 1" style="padding-top: 0;">
-        <ul class="pagination" style="margin: 0;">
+      <nav
+        v-if="totalPages > 1"
+        style="padding-top: 0;"
+      >
+        <ul
+          class="pagination"
+          style="margin: 0;"
+        >
           <li :class="{ disabled: currentPage === 1 }">
-            <a href="#" @click.prevent="goToPage(currentPage - 1)">
+            <a
+              href="#"
+              @click.prevent="goToPage(currentPage - 1)"
+            >
               <span>&laquo;</span>
             </a>
           </li>
@@ -131,10 +159,16 @@
             :key="page"
             :class="{ active: page === currentPage }"
           >
-            <a href="#" @click.prevent="goToPage(page)">{{ page }}</a>
+            <a
+              href="#"
+              @click.prevent="goToPage(page)"
+            >{{ page }}</a>
           </li>
           <li :class="{ disabled: currentPage === totalPages }">
-            <a href="#" @click.prevent="goToPage(currentPage + 1)">
+            <a
+              href="#"
+              @click.prevent="goToPage(currentPage + 1)"
+            >
               <span>&raquo;</span>
             </a>
           </li>

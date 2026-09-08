@@ -23,7 +23,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { DatabaseSync } from "node:sqlite";
 import {
-	alignmentFlags, sizeSort, intOrNull, textIfNotNumeric, crLabel, kebab, splitList,
+	alignmentFlags, sizeSort, intOrNull, textIfNotNumeric,
 } from "./lib/transform.mjs";
 import { crInfo } from "./meta/crInfo.js";
 import { alignments } from "./meta/alignments.js";
