@@ -1,11 +1,17 @@
 # Podman Container Setup
 
-This project includes a Podman container configuration for running the Kobold Fight Club application.
+Kobold Fight Club builds to a fully static site. SQLite runs in the browser via sql.js against
+`/data/monsters.db`, so there is no backend process — the container is nginx serving the Vite build.
+
+- **Image name:** `kobold-fight-club`
+- **Port:** 8095, inside the container and on the host
+- **Size:** ~64 MB
+- **Runs as:** non-root (UID 101), works under rootless Podman
 
 ## Prerequisites
 
-- [Podman](https://podman.io/docs/installation) installed on your system
-- Unix-like shell (bash, zsh, etc.) or PowerShell on Windows
+- [Podman](https://podman.io/docs/installation) installed and, on macOS/Windows, a running machine
+  (`podman machine start`)
 
 ## Quick Start
 
@@ -13,117 +19,90 @@ This project includes a Podman container configuration for running the Kobold Fi
 ./run-podman.sh build-and-run
 ```
 
-This will:
-1. Build the Vue 3 frontend
-2. Create a Podman image with Node.js and Java runtime
-3. Start a container serving the app on http://localhost:8080
+Then open http://localhost:8095.
 
 ## Commands
 
-### Build the image
-```bash
-./run-podman.sh build
-```
+| Command                        | Effect                                           |
+| ------------------------------ | ------------------------------------------------ |
+| `./run-podman.sh build`         | Build the image                                  |
+| `./run-podman.sh run`           | Run the container (builds first if no image)     |
+| `./run-podman.sh build-and-run` | Both (default when no argument is given)         |
+| `./run-podman.sh stop`          | Stop the container                               |
+| `./run-podman.sh restart`       | Restart the container                            |
+| `./run-podman.sh logs`          | Follow container logs                            |
+| `./run-podman.sh shell`         | Open a shell inside the container                |
+| `./run-podman.sh status`        | Show container status                            |
+| `./run-podman.sh clean`         | Remove the container and the image               |
 
-### Run the container
-```bash
-./run-podman.sh run
-```
-
-### View logs
-```bash
-./run-podman.sh logs
-```
-
-### Open a shell in the container
-```bash
-./run-podman.sh shell
-```
-
-### Check container status
-```bash
-./run-podman.sh status
-```
-
-### Stop the container
-```bash
-./run-podman.sh stop
-```
-
-### Clean up (remove container and image)
-```bash
-./run-podman.sh clean
-```
+`run` replaces any existing container, so it is safe to re-run after a rebuild.
 
 ## Configuration
 
-### Custom Port
-To run on a different port, modify the script or run:
-```bash
-podman run -d -p 3000:8080 -v $(pwd)/app:/app/app kobold-fight-club:latest
-```
+Environment variables, all optional:
 
-### Environment Variables
-Set `PODMAN_CMD` to use an alternative podman executable:
 ```bash
+PORT=9000 ./run-podman.sh run          # publish on a different host port
+IMAGE_TAG=v1.0.0 ./run-podman.sh build # tag something other than :latest
 PODMAN_CMD=/usr/local/bin/podman ./run-podman.sh build-and-run
 ```
 
-### Live Development
-The container volume-mounts your `app` directory, so changes to Vue components are reflected (requires dev server in container). To enable live reload in development, you can modify the Dockerfile to use `vite dev` instead of `npm start`.
+`PORT` only changes the host side; the container always listens on 8095.
 
-## Container Details
+## Using Podman directly
 
-- **Base Image**: node:22-alpine (lightweight Node.js with Alpine Linux)
-- **Java Runtime**: OpenJDK 21 JRE (for future Java backend integration)
-- **Port**: 8080 (inside container) → 8080 (host)
-- **Health Check**: Enabled with 30s interval
+```bash
+podman build --format docker -t kobold-fight-club:latest .
+podman run -d --name kobold-fight-club-app -p 8095:8095 kobold-fight-club:latest
+```
+
+`--format docker` matters: Podman's default OCI image format has no `HEALTHCHECK` field and will drop
+the one in the Dockerfile with a warning.
+
+## How the image is built
+
+Two stages:
+
+1. **Builder** (`node:22-alpine`) — `npm ci` then `npm run build`. Dev dependencies are needed here
+   because sass compiles `src/styles/*.scss` during the build.
+2. **Runtime** (`nginxinc/nginx-unprivileged:1.29-alpine`) — copies `dist/` and `nginx.conf`. No Node,
+   no npm, no application code at runtime.
+
+`.containerignore` keeps `node_modules`, the host `dist/`, `.git`, and the data-pipeline directories out
+of the build context. Note that Podman reads `.containerignore` or `.dockerignore` — a `.podmanignore`
+file is silently ignored.
+
+## nginx configuration notes
+
+`nginx.conf` handles four things that the app will break without:
+
+- **SPA fallback** — Vue Router uses `createWebHistory`, so `/battle-tracker` and friends are real URLs
+  that must return `index.html`.
+- **WASM MIME type** — sql.js refuses to instantiate unless `sql-wasm.wasm` arrives as
+  `application/wasm`. nginx's bundled `mime.types` already covers this. Do not add a `types` block to
+  override it: a nested `types` block *replaces* the inherited map instead of extending it, and
+  `mime.types` cannot be included inside one because it is already wrapped in its own `types` block.
+  Doing so serves every file as `application/octet-stream`.
+- **`.db` type and gzip** — `default_type` on `/data/` names `monsters.db` as `application/vnd.sqlite3`,
+  which lets `gzip_types` match it. That takes the download from 1.9 MB to ~820 KB.
+- **Cache headers** — Vite fingerprints `/assets/`, so those are `immutable` for a year, while
+  `index.html` is `no-cache` so a new deploy is picked up instead of pointing at deleted bundles.
+
+## Updating the deployed app
+
+The monster database ships inside the image. After changing data or code:
+
+```bash
+./run-podman.sh build-and-run
+```
 
 ## Troubleshooting
 
-### Container won't start
-Check logs with:
-```bash
-./run-podman.sh logs
-```
+**Container exits immediately.** Almost always an nginx config error. `./run-podman.sh logs` will show
+the `[emerg]` line.
 
-### Port already in use
-Kill the existing container:
-```bash
-./run-podman.sh clean
-```
+**Port already in use.** `./run-podman.sh clean`, or publish elsewhere with `PORT=9000`.
 
-Or use a different port:
-```bash
-podman run -d -p 9000:8080 kobold-fight-club:latest
-```
+**Permission denied running the script.** `chmod +x run-podman.sh`
 
-### Permission denied on script
-Make it executable:
-```bash
-chmod +x run-podman.sh
-```
-
-## Building for Production
-
-For a production build, you can use the Dockerfile directly:
-```bash
-podman build -t kobold-fight-club:v1.0.0 .
-```
-
-## Dockerfile Explanation
-
-The Dockerfile uses a multi-stage build:
-
-1. **Builder Stage**: Installs dependencies and builds the Vue app
-2. **Final Stage**: 
-   - Alpine Linux base with Node.js 22
-   - Includes OpenJDK 21 JRE (for Java backend)
-   - Copies pre-built Vue dist files
-   - Includes health checks
-   - Runs `npm start` to serve the app
-
-This approach:
-- Minimizes final image size
-- Separates build-time from runtime dependencies
-- Enables quick iterations during development
+**Blank page with console errors about MIME types.** The nginx `types` trap described above.

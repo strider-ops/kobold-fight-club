@@ -8,6 +8,7 @@ npm-debug.log*
 temp
 *.npmrc
 .*
+!.containerignore
 build/tmp/
 tmp/
 dist/

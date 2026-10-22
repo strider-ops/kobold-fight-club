@@ -1,0 +1,28 @@
+# Exclude node_modules - fresh dependencies will be pulled by Dockerfile
+node_modules
+
+# Exclude the built file - Dockerfile will rebuild
+dist
+dist-vue
+
+# Exclude files not needed by app for Docker
+.git
+.gitattributes
+.gitignore
+.claude
+.idea
+.vscode
+.DS_Store
+**/.DS_Store
+
+# Exclude directories not needed
+scripts
+source-data
+tmp
+
+# Exclude files not needed
+npm-debug.log*
+*.ps1
+*.md
+Dockerfile
+.containerignore

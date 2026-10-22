@@ -4,6 +4,10 @@
   "description": "Kobold Fight Club v2 - D&D 5e Encounter Builder and Battle Tracker",
   "main": "app/vue/index.html",
   "type": "module",
+  "engines": {
+    "node": ">=24.0.0",
+    "npm": ">=11.0.0"
+  },
   "scripts": {
     "prestart": "npm install",
     "start": "vite",

@@ -1,43 +1,30 @@
-# Multi-stage build: compile Vue 3 frontend
-FROM node:22-alpine AS builder
+# Kobold Fight Club is a fully static SPA: sql.js runs SQLite in the browser
+# against /data/monsters.db, so there is no application server to ship.
+# Stage 1 builds the bundle, stage 2 is just nginx over the result.
 
-WORKDIR /app
+FROM docker.io/library/node:24-alpine AS builder
 
-# Copy package files
-COPY package*.json ./
+WORKDIR /build
 
-# Install dependencies
+# Install against the lockfile first so dependency layers cache independently
+# of source edits. Dev dependencies are required here: sass compiles
+# src/styles/*.scss during the build.
+COPY package.json package-lock.json ./
 RUN npm ci
 
-# Copy source code
 COPY . .
+RUN npm run build
 
-# Build Vue app
-RUN npm run build:vue
 
-# Final stage: serve with Node.js and Java runtime
-FROM node:22-alpine
+# nginx-unprivileged runs as UID 101 and needs no root-owned paths, which keeps
+# the container working the same way under rootless Podman as under root.
+FROM docker.io/nginxinc/nginx-unprivileged:1.29-alpine
 
-# Install Java
-RUN apk add --no-cache openjdk21-jre-headless
+# Match the published port so the app is on 8095 inside and out.
+EXPOSE 8095
 
-WORKDIR /app
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /build/dist /usr/share/nginx/html
 
-# Copy built Vue app from builder
-COPY --from=builder /app/app/vue/dist ./dist
-
-# Copy package files for runtime dependencies
-COPY package*.json ./
-
-# Install production dependencies only
-RUN npm ci --omit=dev
-
-# Expose port
-EXPOSE 8080
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:8080', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
-
-# Start the app
-CMD ["npm", "start"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD wget --quiet --spider http://127.0.0.1:8095/ || exit 1
