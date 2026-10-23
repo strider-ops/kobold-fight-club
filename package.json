@@ -1,6 +1,6 @@
 {
   "name": "5e-monsters",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Kobold Fight Club v2 - D&D 5e Encounter Builder and Battle Tracker",
   "main": "app/vue/index.html",
   "type": "module",
